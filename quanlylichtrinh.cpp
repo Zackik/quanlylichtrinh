@@ -1,6 +1,6 @@
 #include <iostream>
 #include <ctime>
-#include <limits>
+# include <limits>
 using namespace std;
 int day[100], month[100], year[100], hour[100], minute[100];
 string description[100];
@@ -91,7 +91,7 @@ void sort(){
                 minIndex = j;
             }
         }
-        // swap  
+        
         if(minIndex != i){
             int temp;
             temp = year[i];
@@ -121,28 +121,48 @@ void sort(){
         }
     }
     for (int i =0; i < stt; i++){
-        cout<< "Ngay: "<<day[i]<<" thang: "<< month[i]<<" nam: "<<year[i]<< " gio: "<<hour[i]<< " phut: "<<minute[i]<<" Description: "<<description<<"\n";
+        cout<< "Ngay: "<<day[i]<<" thang: "<< month[i]<<" nam: "<<year[i]<< " gio: "<<hour[i]<< " phut: "<<minute[i]<<" Description: "<<description[i]<<"\n";
     }
 }
-void search(string key){
+void search(){
     
+    // if (key.empty()){
+    //     cout<< "Chuoi can tim khong duoc de trong.\n";
+    //     return;
+    // }
+    // bool found = false;
+    // for(int i = 0; i < stt; i++){
+    //     size_t pos = description[i].find(key);
+    //     while (pos != string::npos){
+    //         cout<<"Tim thay tai stt "<< i<< " vi tri: "<<pos<<"\n";
+    //         found = true;
+    //         pos = description[i].find(key, pos + key.length());
+    //     }
+    // }
+    // if (!found){
+    //     cout<< "khong tim thay.\n";
+    // }
+    // return;
+    string key;
+    cout<< "Enter a word to search: ";
+    cin.ignore();
+    getline(cin, key);
     if (key.empty()){
-        cout<< "Chuoi can tim khong duoc de trong.\n";
+        cout<<"chuoi can tim khong co\n";
         return;
     }
     bool found = false;
-    for(int i = 0; i < stt; i++){
-        size_t pos = description[i].find(key);
-        while (pos != string::npos){
-            cout<<"Tim thay tai stt "<< i<< " vi tri: "<<pos<<"\n";
+    for (int i =0; i< stt; i++){
+        if (description[i].find(key) != string::npos){
+            cout<< "Match found at stt: "<<  i << " Nam: "<< year[i]<< " thang: "<<month[i]<<" ngay: "<<day[i]<< " Hour: "<< hour[i]<< " minute: "<< minute[i]<< endl;
             found = true;
-            pos = description[i].find(key, pos + key.length());
+            
         }
     }
     if (!found){
-        cout<< "khong tim thay.\n";
+        cout<<" No match found."<< endl;
     }
-    return;
+
 }
 int main(){
     int chosen;
@@ -188,7 +208,7 @@ int main(){
             sort();
             break;
         case 7:
-            search(key[100]);
+            search();
             break;
         default:
             if (chosen == 0) return 0;
