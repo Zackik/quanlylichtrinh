@@ -22,7 +22,6 @@ void ADD(){
     char c1, c2, c3;
     cout<<"Nhap theo dinh dang (hh:mm dd/mm/yyyy): ";
     cin>> hour[stt] >> c1 >> minute[stt] >> day[stt] >> c2 >> month[stt] >> c3 >> year[stt];
-    
     // cin>> day[stt] >> month[stt]>>year[stt]>>hour[stt]>>minute[stt];
     if (day[stt] < 0 || day[stt]> 31){
         cout<<"Moi nhap lai ngay!";
@@ -75,6 +74,33 @@ void ADD(){
     if(stt == 99){
         cout<<"Da day thong tin!"<<endl;
     }
+    //dem nguoc thoi gian
+    tm cd = {};
+    cd.tm_mday = day[stt];
+    cd.tm_mon = month[stt] - 1;
+    cd.tm_year = year[stt] - 1900;
+    cd.tm_hour = hour[stt];
+    cd.tm_min = minute[stt];
+
+    time_t timet = mktime(&cd);
+    time_t now = time(0);
+
+    double diff = difftime(timet, now);
+    if (diff <= 0){
+        cout<<"Da qua!\n";
+        return;
+    }
+    int k = diff / (60 * 60 * 24); // 86400
+    diff -= k * (60 * 60 * 24);
+
+    int h = diff / (60 * 60);
+    diff -= h * (60 * 60);
+    
+    int p = diff/ 60;
+    cout<<"Con lai: "<< k <<"Ngay: "<< h <<" gio "<< p <<" phut\n";
+
+    //
+    cout<<"";
     stt++;
     
     cout<<"Add thanh cong"<<endl;
@@ -624,16 +650,16 @@ int main(){
             break;
         }
 
-        cout<< "\n====Menu====\n";
-        cout<< "1. Add\n";
-        cout<< "2.Display\n";
-        cout<< "3.Delete\n";
-        cout<< "4.Edit\n";
-        cout<< "5.CountDown\n";
-        cout<< "6.sort\n";
-        cout<< "7.Search\n";
-        cout<< "8.Revenue\n";
-        cout<< "0.Exit\n";
+        cout<< "\n=====Menu=====\n";
+        cout<< "1. Them su kien\n";
+        cout<< "2. In ra su kien\n";
+        cout<< "3. Xoa su kien\n";
+        cout<< "4. Chinh sua su kien\n";
+        cout<< "5. Diem nguoc thoi gian cua su kien\n";
+        cout<< "6. Sap xep su kien\n";
+        cout<< "7. Tim kiem su kien\n";
+        cout<< "8. Thong ke doanh thu su kien\n";
+        cout<< "0. Thoat\n";
         cout<<"Enter chosen: ";
         cin>> chosen;
         switch (chosen)
