@@ -1,22 +1,39 @@
 #include <iostream>
 #include <ctime>
-#include <limits>
+#include <queue>
+#include <fstream>
+#include <cmath>
 using namespace std;
 //mang cua tung bien trong quan ly lich trinh gom ngay thang nam gio phut gioi han la 100 mang.
-int day[100], month[100], year[100], hour[100], minute[100];
-string description[100];
-string address[100];
-string person_to_meet[100];
-string email[100];
-string state[100];//boolean
-int statistics[100];
+int day[200], month[200], year[200], hour[200], minute[200];
+string description[200];
+string address[200];
+string person_to_meet[200];
+string email[200];
+bool state[200];//boolean
+string priority[200];
+string category[200];
+int statistics[200];
+int duration[200];
 int revenue;
+int q[200];
+int front =0;
+int rear = -1;
 string places[7] = {"Sunday", "Monday", "Tuesday", "Webnesday", "Thursday", "Friday", "Saturday"};
 
-string key[100];
+string key[200];
 // day la stt cua tung sk duoc nhan vao va co id rieng.
 int stt = 0;
+//logging
+void writeLog(string action){
+    ofstream file(
+        "log.txt", ios::app);
+    time_t now = time(0);
+    tm *current = localtime(&now);
+    file << "[" << current->tm_hour<<":"<<current->tm_min<<":"<<current->tm_sec<<"]"<<action<<endl;
+    file.close();
 
+}
 // them ngay thang nam gio phut va mo ta lich trinh cua thoi gian do, (value la day, month, year, hour, minute) de nhap thong tin de quan ly thoi gian.
 void ADD(){
     char c1, c2, c3;
@@ -43,6 +60,9 @@ void ADD(){
         cout<<"Moi nhap lai phut";
         return;
     }
+    cout<<"Nhap duration(minutes): ";
+    cin>>duration[stt];
+
     cin.ignore();
     cout<<"Nhap description: ";
     getline(cin, description[stt]);
@@ -53,14 +73,94 @@ void ADD(){
     cout<<"Nhap nguoi can gap(meeting): ";
     getline(cin, person_to_meet[stt]);
     
-    cout<<"Trang thai va can chu y(Done and note): ";
-    getline(cin, state[stt]);
+    // cout<<"Trang thai va can chu y(Done and note): ";
+    // getline(cin, state[stt]);
     // cin.ignore();
+    int chooseState;
+    cout<<"\n==STATUS===\n";
+    cout<<"0. Pending\n";
+    cout<<"1. Done\n";
+    cout<<"2. Canceled\n";
+    cout<<"Choose: ";
+    cin>>chooseState;
+    cin.ignore();
+    switch (chooseState)
+    {
+    case 0:
+        state[stt] = "Pending";
+        break;
+    case 1:
+        state[stt]  = "Done";
+        break;
+    
+    default:
+        state[stt] = "Canceled";
+        break;
+    }
+    
+
     cout<<"Nhap doanh thu(USD): ";
     cin>> statistics[stt];
     
     cout<<"Nhap email(example@gmail.com): ";
     cin>>email[stt];
+
+    int priorityChoice;
+    cout<<"\n==PRIORITY===\n";
+    cout<<"1. High\n";
+    cout<<"2. Medium\n";
+    cout<<"3. Low\n";
+
+    cout<<"Choose: ";
+    cin>>priorityChoice;
+    cin.ignore();
+    switch (priorityChoice)
+    {
+    case 1:
+        priority[stt] = "High";
+        break;
+    case 2:
+        priority[stt]  = "Medium";
+        break;
+    case 3:
+        priority[stt] = "Low";
+    
+    default:
+        priority[stt] = "Low";
+        break;
+    }
+
+    int chooseCategory;
+    cout<<"\n====CATEGORY====\n";
+    cout<<"1. Work\n";
+    cout<<"2. Study\n";
+    cout<<"3. Personal\n";
+    cout<<"4. Meeting\n";
+    cout<<"5. Health\n";
+    cout<<"Choose: ";
+    cin>>chooseCategory;
+    cin.ignore();
+    switch (chooseCategory)
+    {
+    case 1:
+        category[stt] = "Work";
+        break;
+    case 2:
+        category[stt] = "Study";
+        break;
+    case 3:
+        category[stt] = "Personal";
+        break;
+    case 4:
+        category[stt] = "Meeting";
+        break;
+    case 5:
+        category[stt] = "Health";
+        break;
+    default:
+        category[stt] = "Personal";
+    
+    }
     
     int m = month[stt];
     int n = year[stt];
@@ -71,9 +171,10 @@ void ADD(){
     int dayofweek = (d  + y + y/4 - y/100 + y/400 + (31 * mon)/12) % 7;
     places[dayofweek];
     cout<<"Thu: "<<places[dayofweek]<< endl;
-    if(stt == 99){
+    if(stt == 199){
         cout<<"Da day thong tin!"<<endl;
     }
+    
     //dem nguoc thoi gian
     tm cd = {};
     cd.tm_mday = day[stt];
@@ -88,26 +189,87 @@ void ADD(){
     double diff = difftime(timet, now);
     if (diff <= 0){
         cout<<"Da qua!\n";
-        return;
+        
     }
-    int k = diff / (60 * 60 * 24); // 86400
-    diff -= k * (60 * 60 * 24);
+    int k = abs(diff / (60 * 60 * 24)); // 86400
+    diff = abs(diff - (k * (60 * 60 * 24)));
+   
 
-    int h = diff / (60 * 60);
-    diff -= h * (60 * 60);
+    int h = abs(diff / (60 * 60));
+    diff = abs(diff - (h * (60 * 60)));
     
-    int p = diff/ 60;
+    int p = abs(diff/ 60);
     cout<<"Con lai: "<< k <<"Ngay: "<< h <<" gio "<< p <<" phut\n";
 
     //
+    // if (diff < 0 && state[stt] == "Pending"){
+    //     state[stt] = "Expired";
+    // }
+   
+    
     cout<<"";
     stt++;
-    
+    rear++;
+    q[rear] = stt;
+    writeLog("ADD EVENT");
     cout<<"Add thanh cong"<<endl;
+}
+
+
+//dequeue
+void dequeueEvent(){
+    if (front > rear){
+        cout<<"Queue rong!\n";
+        return;
+    }
+    int index = q[front];
+    front++;
+    cout<<"\n===PROCESS EVENT====\n";
+    cout<<"STT: "<<index<<endl;
+    cout<<"Description: "<<description[index]<<endl;
+}
+void exportQueueCSV(){
+    ofstream file("Event.csv");
+    if(!file.is_open()){
+        cout<<"Khong mo duoc file!\n";
+        return;
+    }
+    file<<"QueueOredr,"<<"Description,"<<"Priority,"<<"State\n";
+    int order = 1;
+    for(int i = front; i <= rear; i++){
+        int index = q[i];
+        file<<order<<","<<description[index]<<","<<priority[index]<<","<<state[index]<<"\n";
+        order++;
+        cout<<"==================";
+    }
+    file.close();
+    cout<<"Export Queue CSV Successfully!\n";
+}
+//sang phut
+int startMinutes(int i){
+    return hour[i] * 60 + minute[i];
+}
+int endMinutes(int i){
+    return startMinutes(i) + duration[i];
+}
+bool checkConflict(){
+    int newStart = startMinutes(stt);
+    int newEnd = endMinutes(stt);
+    for(int i =0; i<stt ;i++){
+        if (day[i] == day[stt] && month[i] == month[stt] && year[i] == year[stt]){
+            int oldStart = startMinutes(i);
+
+            int oldEnd = endMinutes(i);
+            if(newStart < oldEnd && oldEnd < newStart){
+                return true;
+            }
+        }
+    }
+    return false;
 }
 // in ra cac ngay thang nam gio phut cua cac su kien da nhap vao.
 void Display(){
-    if (stt < 0 || stt >= 100){
+    if (stt < 0 || stt >= 200){
         cout<<"Khong the in ra neu khong co stt nao hoac qua 100 su kien"<<endl;
         return;
     }
@@ -122,11 +284,69 @@ void Display(){
 
     int dayofweek =
     (d + y + y/4 - y/100 + y/400 + (31 * mon)/12) % 7;
-        cout<<"STT: "<< i << " --> "<< hour[i] << ":"<< minute[i]<< " " << day[i]<< "/"<< month[i] << "/"<< year[i] << "\n"<<"Thu: "<<places[dayofweek] <<"\n"<<"Description: "<< description[i] << "\n" << "Address: "<<address[i]<<"\n"<<"Person to meet: "<<person_to_meet[i]<<"\n" <<"Email: "<<email[i]<< "\n"<< "State: "<< state[i]<<endl;
+        cout<<"STT: "<< i << " --> "<< hour[i] << ":"<< minute[i]<< " " << day[i]<< "/"<< month[i] << "/"<< year[i] << "\n"<<"Thu: "<<places[dayofweek] <<"\n"<<"Description: "<< description[i] << "\n" << "Address: "<<address[i]<<"\n"<<"Person to meet: "<<person_to_meet[i]<<"\n" <<"Email: "<<email[i]<< "\n"<< "State: "<< state[i]<< "\n" <<priority[i]<<"\n"<<"Duration: "<<duration[i]<<" minutes\n"<<"Category: "<<category[i]<<endl;
         cout<<"==============="<<endl;
     }
+    
+    writeLog("DISPLAY EVENT");
     cout<<"Display successfully!"<<endl;
 }
+//function priority transfer number
+int priorityValue(string p){
+    if (p == "High") return 1;
+    if (p == "Medium") return 2;
+    if (p == "Low") return 3;
+    writeLog("PRIORITY VALUE");
+    return 0;
+}
+//sort priority
+void sortPriority(){
+    for(int i =0; i< stt -1; i++){
+        int minIndex = i;
+        for(int j = i + 1; j < stt; j++){
+            if(priorityValue(priority[j]) < priorityValue(priority[minIndex])){
+                minIndex = j;
+            }
+            
+        }
+        if(minIndex != i){
+            int temp;
+            temp = year[i];
+            year[i] = year[minIndex];
+            year[minIndex] = temp;
+
+            temp = month[i];
+            month[i] = month[minIndex];
+            month[minIndex] = temp;
+
+            temp = day[i];
+            day[i] = day[minIndex];
+            day[minIndex] = temp;
+
+            temp = hour[i];
+            hour[i] = hour[minIndex];
+            hour[minIndex] = temp;
+
+            temp = minute[i];
+            minute[i] = minute[minIndex];
+            minute[minIndex] = temp;
+
+            string tempStr;
+            tempStr = description[i];
+            description[i] = description[minIndex];
+            description[minIndex] = tempStr;
+
+            
+        }
+        cout<<"\n==DEBUG==\n";
+        cout<<"Swap "<< i <<"<->"<<minIndex<<endl;
+        
+    }
+    
+    writeLog("SORT PRIORITY");
+    cout<<"Sort Priority Successfully!\n";
+}
+
 // xoa su kien theo index, (value index) de nhap so muon xoa khoi su kien da duoc nhap vao.
 void Delete(){
     int index;
@@ -145,6 +365,9 @@ void Delete(){
         description[i] = description[i + 1];
     }
     stt--;
+    cout<<"\n==DEBUG==\n";
+    cout<<"Delete index: "<<index<<endl;
+    writeLog("DELETE EVENT");
     cout<<"Delete successfully!"<<endl;
 }
 // chinh sua su kien da co trong su kien (value index) de nhap vao so muon chinh sua trong su kien da chon.
@@ -233,7 +456,7 @@ void Edit(){
         break;
     case 10:
         cout<<"Sua state: ";
-        getline(cin, state[index]);
+        cin>>state[index];
         break;
     case 11:   
         cout<< "Nhap ngay thang nam gio phut: ";
@@ -252,7 +475,7 @@ void Edit(){
         getline(cin, email[index]);
         cout<<"\n";
         cout<<" Sua state: ";
-        getline(cin, state[index]);
+        cin>>state[index];
         break;
     default:
         cout<<"Moi chon lai";
@@ -262,6 +485,7 @@ void Edit(){
     // cin>> day[index] >> month[index] >> year[index] >> hour[index] >> minute[index];
     // cin.ignore();
     // getline(cin, description[index]);
+    writeLog("EDIT EVENT");
     cout<<"Edit successfully!"<<endl;
 }
 // La dem nguoc thoi gian da va sap xep lich tuan tu va cu the co ngay thang nam gio phut.
@@ -290,52 +514,159 @@ void countDown(int i){
     int m = diff/ 60;
 
     cout<<" Con lai: "<< d <<"Ngay: "<< h <<" gio "<< m <<" phut\n";
+    cout<<"\n==DEBUG==\n";
+    cout<<"Diff: "<<diff<<endl;
+    writeLog("COUNT DOWN");
     cout<<"Count down successfully!"<<endl;
 }
+//priority_queue
+long long encodeTime(int i){
+        return
+        year[i] * 100000000ll + month[i] * 1000000ll + day[i]* 10000ll + hour[i]* 100ll + minute[i];
+    }
+void PriorityDate(){
+    if (stt == 0){
+        cout<<"Khong co du lieu";
+        return;
+    }
+    
+    priority_queue<long long, deque<long long>, greater<long long>> pq;
+    // push all time in heap
+    for(int i =0; i<stt;i++){
+        pq.push(encodeTime(i));
+    }
+    cout<<"SAP XEP THOI GIAN"<<endl;
+    while(!pq.empty()){
+        long long x = pq.top();
+        pq.pop();
+        int minute1 = x % 100;
+        x /= 100;
+        int hour1 = x % 100;
+        x /= 100;
+        int day1 = x % 100;
+        x /= 100;
+        int month1 = x % 100;
+        x /= 100;
+        int year1 = x;
+        cout<< day1 << "/" <<month1 << "/" << year1 << " " << hour1 << ":" << minute1 <<endl; 
+    }
+}
 // La sap xep cac su kien theo huong la small to big theo ngay thang nam gio phut.
-void sort(){
-    for (int i =0; i < stt -1 ; i++){
-        int minIndex =i;
-        for (int j = i + 1; j < stt; j++){
-            // so sanh time
-            if (year[j] < year[minIndex] || (year[j] == year[minIndex] && month[j]  < month[minIndex])
-            || (year[j] == year[minIndex] && month[j] == month[minIndex] && day[j]< day[minIndex]) || 
-            (year[j] == year[minIndex] && month[j] == month[minIndex] && day[j] == day[minIndex] && hour[j] < hour[minIndex]) || 
-            (year[j] == year[minIndex] && month[j] == month[minIndex] && day[j] == day[minIndex] && hour[j] == hour[minIndex] && minute[j] < minute[minIndex])){
-                minIndex = j;
-            }
-        }
+// void sort(){
+//     for (int i =0; i < stt -1 ; i++){
+//         int minIndex =i;
+//         for (int j = i + 1; j < stt; j++){
+//             // so sanh time
+//             if (year[j] < year[minIndex] || (year[j] == year[minIndex] && month[j]  < month[minIndex])
+//             || (year[j] == year[minIndex] && month[j] == month[minIndex] && day[j]< day[minIndex]) || 
+//             (year[j] == year[minIndex] && month[j] == month[minIndex] && day[j] == day[minIndex] && hour[j] < hour[minIndex]) || 
+//             (year[j] == year[minIndex] && month[j] == month[minIndex] && day[j] == day[minIndex] && hour[j] == hour[minIndex] && minute[j] < minute[minIndex])){
+//                 minIndex = j;
+//             }
+//         }
         
-        if(minIndex != i){
-            int temp;
-            temp = year[i];
-            year[i] = year[minIndex];
-            year[minIndex] = temp;
+//         if(minIndex != i){
+//             int temp;
+//             temp = year[i];
+//             year[i] = year[minIndex];
+//             year[minIndex] = temp;
 
-            temp = month[i];
-            month[i] = month[minIndex];
-            month[minIndex] = temp;
+//             temp = month[i];
+//             month[i] = month[minIndex];
+//             month[minIndex] = temp;
 
-            temp = day[i];
-            day[i] = day[minIndex];
-            day[minIndex] = temp;
+//             temp = day[i];
+//             day[i] = day[minIndex];
+//             day[minIndex] = temp;
 
-            temp = hour[i];
-            hour[i] = hour[minIndex];
-            hour[minIndex] = temp;
+//             temp = hour[i];
+//             hour[i] = hour[minIndex];
+//             hour[minIndex] = temp;
 
-            temp = minute[i];
-            minute[i] = minute[minIndex];
-            minute[minIndex] = temp;
+//             temp = minute[i];
+//             minute[i] = minute[minIndex];
+//             minute[minIndex] = temp;
 
-            string tempStr;
-            tempStr = description[i];
-            description[i] = description[minIndex];
-            description[minIndex] = tempStr;
+//             string tempStr;
+//             tempStr = description[i];
+//             description[i] = description[minIndex];
+//             description[minIndex] = tempStr;
+//         }
+//     }
+//     cout<<"Sort successfully!"<<endl;
+    
+// }
+// sort binary sort
+int binaryPosition(long long value, int low, int high){
+    while(low <= high){
+        int mid = (low + high)/2;
+        if(encodeTime(mid) > value){
+            high = mid -1;
+
+        }
+        else{
+            low = mid + 1;
         }
     }
-    cout<<"Sort successfully!"<<endl;
+    return low;
+}
+
+void sort(){
+    for (int i = 1; i < stt; i++){
+        long long currentTime = year[i]* 100000000ll + month[i]* 1000000ll + day[i]* 10000ll + hour[i]* 100ll + minute[i];
+        // save data
+        int tempDay = day[i];
+        int tempMonth = month[i];
+        int tempYear = year[i];
+        int tempHour = hour[i];
+        int tempMinute = minute[i];
+
+        int tempStatistics = statistics[i];
+
+        string tempDes = description[i];
+        string tempaddress = address[i];
+        string tempPerson = person_to_meet[i];
+        string tempEmail = email[i];
+        bool tempState = state[i];
+
+        //find position by binary sort
+        int pos = binaryPosition(currentTime,0, i-1);
+
+        //doi mang
+        for(int j = i; j > pos; j--){
+            day[j] = day[j -1];
+            month[j] = month[j -1];
+            year[j] = year[j - 1];
+            hour[j] = hour[j -1];
+
+            statistics[j] = statistics[j -1];
+
+            description[j] = description[j -1];
+            address[j] = address[j -1];
+            person_to_meet[j] = person_to_meet[j -1];
+            email[i] = email[j -1];
+            state[i] = state[j -1];
+        }
+        //chen lai
+        day[pos] = tempDay;
+        month[pos] = tempMonth;
+        year[pos] = tempYear;
+        hour[pos] = tempHour;
+        minute[pos] = tempMinute;
+
+        statistics[pos] = tempStatistics;
+
+        description[pos] = tempDes;
+        address[pos] = tempaddress;
+        person_to_meet[pos] = tempPerson;
+        email[pos] = tempEmail;
+        state[pos] = tempState;
+
+        
+    }
     
+    writeLog("SORT EVENT");
+    cout<<"Binary sort successfully!\n";
 }
 // La tim kiem tu khoa trong description cua tung su kien va in ra (value key).
 void search(){
@@ -512,49 +843,88 @@ void search(){
 
 }
 // Tim kiem nguoi can gap mat tron su kien cua lich trinh voi (value keyperson)
-void search_person_to_meet(){
-    bool found = false;
-    string keyperson;
-    cout<<" Enter a word to search (person to meet): ";
+// void search_person_to_meet(){
+//     bool found = false;
+//     string keyperson;
+//     cout<<" Enter a word to search (person to meet): ";
+//     cin.ignore();
+//     getline(cin, keyperson);
+//     if (keyperson.empty()){
+//         cout<<"Moi nhap thon tin vao\n";
+//         return;
+//     }
+//     for(int i =0; i< stt; i++ ){
+//         if (person_to_meet[i].find(keyperson) != string::npos){
+//             cout<<" Match found at stt: "<< i << " Person to meet: "<< person_to_meet[i]<< endl;
+//             found = true;
+//     }
+//     }
+//     if (!found){
+//         cout<<" No match found!";
+//         return;
+//     }
+// }
+// Binary search string
+void searchPersonBinary(){
+    string keyPerson;
+    cout<<"Nhap ten can tim: ";
     cin.ignore();
-    getline(cin, keyperson);
-    if (keyperson.empty()){
-        cout<<"Moi nhap thon tin vao\n";
-        return;
-    }
-    for(int i =0; i< stt; i++ ){
-        if (person_to_meet[i].find(keyperson) != string::npos){
-            cout<<" Match found at stt: "<< i << " Person to meet: "<< person_to_meet[i]<< endl;
+    getline(cin, keyPerson);
+    int left = 0;
+    int right = stt -1;
+    bool found = false;
+    while(left <= right){
+        int mid = (left + right)/2;
+        if(person_to_meet[mid] == keyPerson){
+            cout<<"Find at STT: "<< mid << endl;
             found = true;
+            break;
+        }
+        else if(person_to_meet[mid] < keyPerson){
+            left = mid + 1;
+        }
+        else{
+            right = mid - 1;
+        }
     }
+    while(left <= right){
+        int mid = (left + right)/2;
+        cout<<"\n==DEBUG==\n";
+        cout<<"LEFT: "<<left<<endl;
+        cout<<"RIGHT: "<<right<<endl;
+        cout<<"VALUE: "<<person_to_meet[mid]<<endl;
     }
-    if (!found){
-        cout<<" No match found!";
+    if(!found){
+        cout<<"Khong tim thay!\n";
         return;
     }
+}
+//Binary search address
+void Search_address_binary(){
+
 }
 //Tim kiem dia chi thong tin cua su kien (value keyaddress)
-void search_address(){
-    bool found = false;
-    string keyaddress;
-    cout<<" Enter a word to search (address): ";
-    cin.ignore();
-    getline(cin, keyaddress);
-    if (keyaddress.empty()){
-        cout<<"Moi nhap thong tin vao\n";
-        return;
-    }
-    for(int i =0; i< stt; i++){
-        if(address[i].find(keyaddress) != string::npos){
-            cout<<" Match found at stt: "<< i << " Address: "<< address[i]<< endl;
-            found = true;
-    }
-    }
-    if (!found){
-        cout<<" No match found!"<<endl;
-        return;
-    }
-}
+// void search_address(){
+//     bool found = false;
+//     string keyaddress;
+//     cout<<" Enter a word to search (address): ";
+//     cin.ignore();
+//     getline(cin, keyaddress);
+//     if (keyaddress.empty()){
+//         cout<<"Moi nhap thong tin vao\n";
+//         return;
+//     }
+//     for(int i =0; i< stt; i++){
+//         if(address[i].find(keyaddress) != string::npos){
+//             cout<<" Match found at stt: "<< i << " Address: "<< address[i]<< endl;
+//             found = true;
+//     }
+//     }
+//     if (!found){
+//         cout<<" No match found!"<<endl;
+//         return;
+//     }
+// }
 //Tim kiem email trong su kien (value keyemail)
 void search_email(){
     bool found = false;
@@ -578,35 +948,37 @@ void search_email(){
     }
 }
 //Tim kiem trang thai (value keystate)
-void state_trangthai(){
-    bool found = false;
-    string keystate;
-    cout<<" Enter a word to search (state): ";
-    cin.ignore();
-    getline(cin, keystate);
-    if (keystate.empty()){
-        cout<<"Moi nhap thong tin vao\n";
-        return;
-    }
-    for(int i =0; i< stt; i++){
-        if (state[i].find(keystate) != string::npos){
-            cout<<"Match a found to stt: "<< i << " State: "<< state[i]<<endl;
-            found = true;
-    }
-    }
-    if(!found){
-        cout<<"Khong tim thay ket qua!\n";
-        return;
-    }
-}
+// void state_trangthai(){
+//     bool found = false;
+//     string keystate;
+//     cout<<" Enter a word to search (state): ";
+//     cin.ignore();
+//     getline(cin, keystate);
+//     if (keystate.empty()){
+//         cout<<"Moi nhap thong tin vao\n";
+//         return;
+//     }
+//     for(int i =0; i< stt; i++){
+//         if (state[i].find(keystate) != string::npos){
+//             cout<<"Match a found to stt: "<< i << " State: "<< state[i]<<endl;
+//             found = true;
+//     }
+//     }
+//     if(!found){
+//         cout<<"Khong tim thay ket qua!\n";
+//         return;
+//     }
+// }
+
+
 //Thong ke theo bieu do
 void Revenue(){
     if ( stt ==0 ){
          cout<< "Khong co du lieu!\n";
          return;
     }
-    int tempRev[100];
-    int tempIndex[100];
+    int tempRev[200];
+    int tempIndex[200];
     for(int i = 0; i < stt; i++){
         tempRev[i] = statistics[i];
         tempIndex[i] = i;
@@ -645,10 +1017,20 @@ int main(){
     <<" Thoi gian thuc: "<< currentTime->tm_hour << ":"<<currentTime->tm_min<<":"<<currentTime->tm_sec<<endl;
     while(1){
         //validate.
-        if (stt < 0 || stt >= 100){
+        if (stt < 0 || stt >= 200){
+            writeLog("ERROR" "INVALID INDEX");
+            break;
+        }
+        if (stt < 0 || stt >= 200){
             cout<<"Ban chi co the them 100 su kien!"<< endl;
             break;
         }
+        if(checkConflict()){
+        cout<<"\n[WARNING]";
+        cout<<" CONFLICT EVENT!\n";
+        writeLog("WARNING" "CONFLICT EVENT");
+        }
+
 
         cout<< "\n=====Menu=====\n";
         cout<< "1. Them su kien\n";
@@ -659,6 +1041,7 @@ int main(){
         cout<< "6. Sap xep su kien\n";
         cout<< "7. Tim kiem su kien\n";
         cout<< "8. Thong ke doanh thu su kien\n";
+        cout<< "9. Uu tien ngay thang nam gio phut\n";
         cout<< "0. Thoat\n";
         cout<<"Enter chosen: ";
         cin>> chosen;
@@ -702,16 +1085,16 @@ int main(){
             switch (choise)
             {
             case 1:
-                search_address();
+                // search_address();
                 break;
             case 2:
-                search_person_to_meet();
+                // search_person_to_meet();
                 break;
             case 3:
                 search_email();
                 break;
             case 4:
-                state_trangthai();
+                // state_trangthai();
                 break;
             default:
                 cout<<"Moi nhap lai!";
@@ -721,9 +1104,94 @@ int main(){
         case 8:
             Revenue();
             break;
+        case 9:
+            PriorityDate();
+            break;
+        case 10:
+            dequeueEvent();
+            break;
+        case 11:
+            exportQueueCSV();
+            break;
         default:
             if (chosen == 0) return 0;
         }
     }
     return 0;
+}
+//unit test
+
+//test sort
+void testSort(){
+    stt = 3;
+    day[0] = 10;
+    month[0] = 8;
+    year[0] = 2026;
+
+    day[1] =5;
+    month[1] = 8;
+    year[1] = 2026;
+
+    day[2] = 20;
+    month[2] = 8;
+    year[2] = 2026;
+
+    sort();
+    if(day[0] == 5){
+        cout<<"TEST PASS\n";
+    }
+    else{
+        cout<<"TEST FAIL\n";
+    }
+}
+//test binary search
+void testSearch(){
+    stt = 3;
+    person_to_meet[0] = "An";
+    person_to_meet[1] = "Binh";
+    person_to_meet[2] = "Thanh";
+
+    string key = "Binh";
+    int left =0;
+    int right = stt -1;
+    bool found = false;
+
+    while(left <= right){
+        int mid = (left + right) /2;
+        if(person_to_meet[mid] == key){
+            found = true;
+            break;
+        }
+        else if(person_to_meet[mid] < key){
+            left = mid + 1;
+        }
+        else{
+            right = mid - 1;
+        }
+    }
+    if (found){
+        cout<<"TEST PASS\n";
+    }
+    else{
+        cout<<"TEST FAIL\n";
+    }
+}
+//test conflict 
+void testconflict(){
+    stt = 1;
+    hour[0] = 14;
+    minute[0] =0;
+
+    duration[0] = 120;
+
+    hour[1] = 15;
+    minute[1] =0;
+    duration[1] = 30;
+
+    if(checkConflict()){
+        cout<<"TEST PASS\n";
+    }
+    else{
+        cout<<"TEST FAIL\n";
+    }
 }
