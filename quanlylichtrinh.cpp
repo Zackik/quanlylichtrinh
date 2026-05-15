@@ -30,7 +30,8 @@ void writeLog(string action){
         "log.txt", ios::app);
     time_t now = time(0);
     tm *current = localtime(&now);
-    file << "[" << current->tm_hour<<":"<<current->tm_min<<":"<<current->tm_sec<<"]"<<action<<endl;
+    file << "[" << current->tm_mday << "/" << current->tm_mon + 1 << "/" << current->tm_year + 1900 << " "
+    << current->tm_hour << ":" << current->tm_min << "]" << action << endl;
     file.close();
 
 }
@@ -189,7 +190,7 @@ void ADD(){
     double diff = difftime(timet, now);
     if (diff <= 0){
         cout<<"Da qua!\n";
-        
+        return;
     }
     int k = abs(diff / (60 * 60 * 24)); // 86400
     diff = abs(diff - (k * (60 * 60 * 24)));
@@ -228,22 +229,45 @@ void dequeueEvent(){
     cout<<"STT: "<<index<<endl;
     cout<<"Description: "<<description[index]<<endl;
 }
-void exportQueueCSV(){
-    ofstream file("Event.csv");
-    if(!file.is_open()){
-        cout<<"Khong mo duoc file!\n";
+//enqueue
+void enqueueEvent(int stt){
+    if (rear == 201 -1){
+        cout<<"Queue full!\n";
         return;
     }
-    file<<"QueueOredr,"<<"Description,"<<"Priority,"<<"State\n";
+    rear++;
+    q[rear] = stt;
+}
+void exportQueueCSV(){
+    if(front > rear){
+        cout<<"Queue rong!\n";
+        return;
+    }
+    ofstream file("Event.csv");
+    if(!file.is_open()){
+        cout<< "Khong mo duoc file!\n";
+        return;
+    }
+
+    file << "QueueOrder,Description,Priority,State\n";
     int order = 1;
     for(int i = front; i <= rear; i++){
         int index = q[i];
-        file<<order<<","<<description[index]<<","<<priority[index]<<","<<state[index]<<"\n";
+        string status = (state[index] == true) ? "Done" : "Pending";
+        file<<order<<"," <<"\"" <<description[index] <<"\"" << ","
+        << "\"" << priority[index] <<"\"" << ","
+        <<"\"" << status <<"\""
+        <<"\n";
+
         order++;
-        cout<<"==================";
     }
     file.close();
-    cout<<"Export Queue CSV Successfully!\n";
+
+    writeLog("EXPORT QUEUE CSV");
+    cout<< "============\n";
+    cout<< "Export Queue CSV Successfully!\n";
+    cout<< "File: Event.csv\n";
+    cout<< "============\n";
 }
 //sang phut
 int startMinutes(int i){
@@ -260,7 +284,7 @@ bool checkConflict(){
             int oldStart = startMinutes(i);
 
             int oldEnd = endMinutes(i);
-            if(newStart < oldEnd && oldEnd < newStart){
+            if(newStart < oldEnd && newStart > oldStart){
                 return true;
             }
         }
@@ -644,8 +668,8 @@ void sort(){
             description[j] = description[j -1];
             address[j] = address[j -1];
             person_to_meet[j] = person_to_meet[j -1];
-            email[i] = email[j -1];
-            state[i] = state[j -1];
+            email[j] = email[j -1];
+            state[j] = state[j -1];
         }
         //chen lai
         day[pos] = tempDay;
@@ -887,13 +911,13 @@ void searchPersonBinary(){
             right = mid - 1;
         }
     }
-    while(left <= right){
-        int mid = (left + right)/2;
-        cout<<"\n==DEBUG==\n";
-        cout<<"LEFT: "<<left<<endl;
-        cout<<"RIGHT: "<<right<<endl;
-        cout<<"VALUE: "<<person_to_meet[mid]<<endl;
-    }
+    // while(left <= right){
+    //     int mid = (left + right)/2;
+    //     cout<<"\n==DEBUG==\n";
+    //     cout<<"LEFT: "<<left<<endl;
+    //     cout<<"RIGHT: "<<right<<endl;
+    //     cout<<"VALUE: "<<person_to_meet[mid]<<endl;
+    // }
     if(!found){
         cout<<"Khong tim thay!\n";
         return;
@@ -901,8 +925,35 @@ void searchPersonBinary(){
 }
 //Binary search address
 void Search_address_binary(){
+    string keyAddress_Binary;
+    cout<<"Nhap address can tim: ";
+    cin.ignore();
+    getline(cin, keyAddress_Binary);
+
+    int left = 0;
+    int right = stt -1;
+    bool found = false;
+    while (left <= right){
+        int mid = (left + right)/2;
+        if (address[mid] == keyAddress_Binary){
+            cout<< "Find at STT: "<<mid<<endl;
+            found = true;
+            break;
+        }
+        else if(address[mid] < keyAddress_Binary){
+            left = mid + 1;
+        }
+        else{
+            right = mid -1;
+        }
+    }
+    if(!found){
+        cout<<"KHong tim thay!\n";
+    }
 
 }
+
+
 //Tim kiem dia chi thong tin cua su kien (value keyaddress)
 // void search_address(){
 //     bool found = false;
@@ -945,6 +996,34 @@ void search_email(){
     if(!found){
         cout<<"Khong tim thay ket qua!"<<endl;
         return;
+    }
+}
+
+void SearchEmailBinary(){
+    string keyEmail_Binary;
+    cout<<"Nhap email can tim: ";
+    cin.ignore();
+    getline(cin, keyEmail_Binary);
+    int left = 0;
+    int right = stt -1;
+    bool found = false;
+    while(left <= right){
+        int mid = (left + right)/2;
+
+        if(email[mid] == keyEmail_Binary){
+            cout<<"Find at STT: "<<mid << endl;
+            found = true;
+            break;
+        }
+        else if(email[mid] < keyEmail_Binary){
+            left = mid + 1;
+        }
+        else{
+            right = mid - 1;
+        }
+    }
+    if(!found){
+        cout<<"Khong tim that!\n";
     }
 }
 //Tim kiem trang thai (value keystate)
@@ -1042,6 +1121,8 @@ int main(){
         cout<< "7. Tim kiem su kien\n";
         cout<< "8. Thong ke doanh thu su kien\n";
         cout<< "9. Uu tien ngay thang nam gio phut\n";
+        cout<< "10. \n";
+        cout<< "11. Xuat file .csv\n";
         cout<< "0. Thoat\n";
         cout<<"Enter chosen: ";
         cin>> chosen;
@@ -1079,22 +1160,22 @@ int main(){
             cout<<"1. Tim kiem address\n";
             cout<<"2. Tim kiem person to meet\n";
             cout<<"3. Tim kiem email\n";
-            cout<<"4. Tim kiem state\n";
+            
             cin>>choise;
             
             switch (choise)
             {
             case 1:
                 // search_address();
+                Search_address_binary();
                 break;
             case 2:
                 // search_person_to_meet();
+                searchPersonBinary();
                 break;
             case 3:
-                search_email();
-                break;
-            case 4:
-                // state_trangthai();
+                // search_email();
+                SearchEmailBinary();
                 break;
             default:
                 cout<<"Moi nhap lai!";
@@ -1113,6 +1194,27 @@ int main(){
         case 11:
             exportQueueCSV();
             break;
+        case 12:
+            int choicee;
+            cout<<"1. Test sort";
+            cout<<"2. Binary search";
+            cout<<"3. Test conflict";
+            cout<<"Choice: ";
+            cin>>choicee;
+            switch(choicee){
+                case 1:
+                    // testSort();
+                    break;
+                case 2:
+                    // testSearch();
+                    break;
+                case 3:
+                    // testconflict();
+                    break;
+                default:
+                    cout<<"Nhap lai!\n";
+            }
+           
         default:
             if (chosen == 0) return 0;
         }
