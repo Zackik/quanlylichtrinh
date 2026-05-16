@@ -555,151 +555,151 @@ void countDown(int i){
     cout<<"Count down successfully!"<<endl;
 }
 //priority_queue
-long long encodeTime(int i){
-        return
-        year[i] * 100000000ll + month[i] * 1000000ll + day[i]* 10000ll + hour[i]* 100ll + minute[i];
-    }
-void PriorityDate(){
-    if (stt == 0){
-        cout<<"Khong co du lieu";
-        return;
-    }
+// long long encodeTime(int i){
+//         return
+//         year[i] * 100000000ll + month[i] * 1000000ll + day[i]* 10000ll + hour[i]* 100ll + minute[i];
+//     }
+// void PriorityDate(){
+//     if (stt == 0){
+//         cout<<"Khong co du lieu";
+//         return;
+//     }
     
-    priority_queue<long long, deque<long long>, greater<long long>> pq;
-    // push all time in heap
-    for(int i =0; i<stt;i++){
-        pq.push(encodeTime(i));
-    }
-    cout<<"SAP XEP THOI GIAN"<<endl;
-    while(!pq.empty()){
-        long long x = pq.top();
-        pq.pop();
-        int minute1 = x % 100;
-        x /= 100;
-        int hour1 = x % 100;
-        x /= 100;
-        int day1 = x % 100;
-        x /= 100;
-        int month1 = x % 100;
-        x /= 100;
-        int year1 = x;
-        cout<< day1 << "/" <<month1 << "/" << year1 << " " << hour1 << ":" << minute1 <<endl; 
-    }
-}
+//     priority_queue<long long, deque<long long>, greater<long long>> pq;
+//     // push all time in heap
+//     for(int i =0; i<stt;i++){
+//         pq.push(encodeTime(i));
+//     }
+//     cout<<"SAP XEP THOI GIAN"<<endl;
+//     while(!pq.empty()){
+//         long long x = pq.top();
+//         pq.pop();
+//         int minute1 = x % 100;
+//         x /= 100;
+//         int hour1 = x % 100;
+//         x /= 100;
+//         int day1 = x % 100;
+//         x /= 100;
+//         int month1 = x % 100;
+//         x /= 100;
+//         int year1 = x;
+//         cout<< day1 << "/" <<month1 << "/" << year1 << " " << hour1 << ":" << minute1 <<endl; 
+//     }
+// }
 // La sap xep cac su kien theo huong la small to big theo ngay thang nam gio phut.
-// void sort(){
-//     for (int i =0; i < stt -1 ; i++){
-//         int minIndex =i;
-//         for (int j = i + 1; j < stt; j++){
-//             // so sanh time
-//             if (year[j] < year[minIndex] || (year[j] == year[minIndex] && month[j]  < month[minIndex])
-//             || (year[j] == year[minIndex] && month[j] == month[minIndex] && day[j]< day[minIndex]) || 
-//             (year[j] == year[minIndex] && month[j] == month[minIndex] && day[j] == day[minIndex] && hour[j] < hour[minIndex]) || 
-//             (year[j] == year[minIndex] && month[j] == month[minIndex] && day[j] == day[minIndex] && hour[j] == hour[minIndex] && minute[j] < minute[minIndex])){
-//                 minIndex = j;
-//             }
-//         }
+void sort(){
+    for (int i =0; i < stt -1 ; i++){
+        int minIndex =i;
+        for (int j = i + 1; j < stt; j++){
+            // so sanh time
+            if (year[j] < year[minIndex] || (year[j] == year[minIndex] && month[j]  < month[minIndex])
+            || (year[j] == year[minIndex] && month[j] == month[minIndex] && day[j]< day[minIndex]) || 
+            (year[j] == year[minIndex] && month[j] == month[minIndex] && day[j] == day[minIndex] && hour[j] < hour[minIndex]) || 
+            (year[j] == year[minIndex] && month[j] == month[minIndex] && day[j] == day[minIndex] && hour[j] == hour[minIndex] && minute[j] < minute[minIndex])){
+                minIndex = j;
+            }
+        }
         
-//         if(minIndex != i){
-//             int temp;
-//             temp = year[i];
-//             year[i] = year[minIndex];
-//             year[minIndex] = temp;
+        if(minIndex != i){
+            int temp;
+            temp = year[i];
+            year[i] = year[minIndex];
+            year[minIndex] = temp;
 
-//             temp = month[i];
-//             month[i] = month[minIndex];
-//             month[minIndex] = temp;
+            temp = month[i];
+            month[i] = month[minIndex];
+            month[minIndex] = temp;
 
-//             temp = day[i];
-//             day[i] = day[minIndex];
-//             day[minIndex] = temp;
+            temp = day[i];
+            day[i] = day[minIndex];
+            day[minIndex] = temp;
 
-//             temp = hour[i];
-//             hour[i] = hour[minIndex];
-//             hour[minIndex] = temp;
+            temp = hour[i];
+            hour[i] = hour[minIndex];
+            hour[minIndex] = temp;
 
-//             temp = minute[i];
-//             minute[i] = minute[minIndex];
-//             minute[minIndex] = temp;
+            temp = minute[i];
+            minute[i] = minute[minIndex];
+            minute[minIndex] = temp;
 
-//             string tempStr;
-//             tempStr = description[i];
-//             description[i] = description[minIndex];
-//             description[minIndex] = tempStr;
+            string tempStr;
+            tempStr = description[i];
+            description[i] = description[minIndex];
+            description[minIndex] = tempStr;
+        }
+    }
+    cout<<"Sort successfully!"<<endl;
+    
+}
+// sort binary sort
+// int binaryPosition(long long value, int low, int high){
+//     while(low <= high){
+//         int mid = (low + high)/2;
+//         if(encodeTime(mid) > value){
+//             high = mid -1;
+
+//         }
+//         else{
+//             low = mid + 1;
 //         }
 //     }
-//     cout<<"Sort successfully!"<<endl;
-    
+//     return low;
 // }
-// sort binary sort
-int binaryPosition(long long value, int low, int high){
-    while(low <= high){
-        int mid = (low + high)/2;
-        if(encodeTime(mid) > value){
-            high = mid -1;
 
-        }
-        else{
-            low = mid + 1;
-        }
-    }
-    return low;
-}
+// void sort(){
+//     for (int i = 1; i < stt; i++){
+//         long long currentTime = year[i]* 100000000ll + month[i]* 1000000ll + day[i]* 10000ll + hour[i]* 100ll + minute[i];
+//         // save data
+//         int tempDay = day[i];
+//         int tempMonth = month[i];
+//         int tempYear = year[i];
+//         int tempHour = hour[i];
+//         int tempMinute = minute[i];
 
-void sort(){
-    for (int i = 1; i < stt; i++){
-        long long currentTime = year[i]* 100000000ll + month[i]* 1000000ll + day[i]* 10000ll + hour[i]* 100ll + minute[i];
-        // save data
-        int tempDay = day[i];
-        int tempMonth = month[i];
-        int tempYear = year[i];
-        int tempHour = hour[i];
-        int tempMinute = minute[i];
+//         int tempStatistics = statistics[i];
 
-        int tempStatistics = statistics[i];
+//         string tempDes = description[i];
+//         string tempaddress = address[i];
+//         string tempPerson = person_to_meet[i];
+//         string tempEmail = email[i];
+//         bool tempState = state[i];
 
-        string tempDes = description[i];
-        string tempaddress = address[i];
-        string tempPerson = person_to_meet[i];
-        string tempEmail = email[i];
-        bool tempState = state[i];
+//         //find position by binary sort
+//         int pos = binaryPosition(currentTime,0, i-1);
 
-        //find position by binary sort
-        int pos = binaryPosition(currentTime,0, i-1);
+//         //doi mang
+//         for(int j = i; j > pos; j--){
+//             day[j] = day[j -1];
+//             month[j] = month[j -1];
+//             year[j] = year[j - 1];
+//             hour[j] = hour[j -1];
 
-        //doi mang
-        for(int j = i; j > pos; j--){
-            day[j] = day[j -1];
-            month[j] = month[j -1];
-            year[j] = year[j - 1];
-            hour[j] = hour[j -1];
+//             statistics[j] = statistics[j -1];
 
-            statistics[j] = statistics[j -1];
+//             description[j] = description[j -1];
+//             address[j] = address[j -1];
+//             person_to_meet[j] = person_to_meet[j -1];
+//             email[j] = email[j -1];
+//             state[j] = state[j -1];
+//         }
+//         //chen lai
+//         day[pos] = tempDay;
+//         month[pos] = tempMonth;
+//         year[pos] = tempYear;
+//         hour[pos] = tempHour;
+//         minute[pos] = tempMinute;
 
-            description[j] = description[j -1];
-            address[j] = address[j -1];
-            person_to_meet[j] = person_to_meet[j -1];
-            email[j] = email[j -1];
-            state[j] = state[j -1];
-        }
-        //chen lai
-        day[pos] = tempDay;
-        month[pos] = tempMonth;
-        year[pos] = tempYear;
-        hour[pos] = tempHour;
-        minute[pos] = tempMinute;
+//         statistics[pos] = tempStatistics;
 
-        statistics[pos] = tempStatistics;
-
-        description[pos] = tempDes;
-        address[pos] = tempaddress;
-        person_to_meet[pos] = tempPerson;
-        email[pos] = tempEmail;
-        state[pos] = tempState;
-    }
-    writeLog("SORT EVENT");
-    cout<<"Binary sort successfully!\n";
-}
+//         description[pos] = tempDes;
+//         address[pos] = tempaddress;
+//         person_to_meet[pos] = tempPerson;
+//         email[pos] = tempEmail;
+//         state[pos] = tempState;
+//     }
+//     writeLog("SORT EVENT");
+//     cout<<"Binary sort successfully!\n";
+// }
 // La tim kiem tu khoa trong description cua tung su kien va in ra (value key).
 void search(){
     // int chon;
@@ -1120,7 +1120,7 @@ int main(){
         cout<< "7. Tim kiem su kien\n";
         cout<< "8. Thong ke doanh thu su kien\n";
         cout<< "9. Uu tien ngay thang nam gio phut\n";
-        cout<< "10. \n";
+        cout<< "10. dequeue\n";
         cout<< "11. Xuat file .csv\n";
         cout<< "12. Unit test serach\n";
         cout<< "13. Log\n";
@@ -1195,7 +1195,46 @@ int main(){
             Revenue();
             break;
         case 9:
-            PriorityDate();
+            // PriorityDate();
+            // int chon;
+            // cout<<"1. High\n";
+            // cout<<"2 .Medium\n";
+            // cout<<"3 .Low\n";
+            // cout<<"Chon: ";
+            // cin>>chon;
+            // string target;
+            // switch (chon)
+            // {
+            // case 1:
+            //     target = "High";
+            //     break;
+            // case 2:
+            //     target = "Medium";
+            //     break;
+            // case 3:
+            //     target = "Low";
+            //     break;
+            // default:
+            //     cout<<"Khong hop le!\n";
+            //     break;
+            // }
+            // bool found = false;
+            // for(int i =00; i< stt; i++){
+            //     if (priority[i] == target){
+            //         cout<<"\n==========\n";
+            //         cout<<"STT: "<< i<< endl;
+            //         cout<<"Date: "<< day[i] << "/"<<month[i]<<"/"<<year[i]<<endl;
+            //         cout<<"Time: "<< hour[i]<<":"<<minute[i]<<endl;
+            //         cout<<"Description: "<<description[i]<<endl;
+            //         cout<<"Priority: "<<priority[i]<<endl;
+            //         found = true;
+            //     }
+            // }
+            // if(!found){
+            //     cout<<"Khong co event nao!\n";
+            // }
+            // break;
+            prioritycheck();
             break;
         case 10:
             dequeueEvent();
@@ -1261,6 +1300,13 @@ int main(){
     
          }
          return 0;
+}
+//string priority test
+bool checkPriority(string p){
+    if(p == "High" || p =="Medium" || p == "Low"){
+        return true;
+    }
+    return false;
 }
 //unit test
 
@@ -1338,3 +1384,42 @@ int main(){
 //         cout<<"TEST FAIL\n";
 //     }
 // }
+void prioritycheck(){
+    int chon;
+    cout<<"1. High\n";
+    cout<<"2 .Medium\n";
+    cout<<"3 .Low\n";
+    cout<<"Chon: ";
+    cin>>chon;
+    string target;
+    switch (chon)
+    {
+    case 1:
+        target = "High";
+        break;
+    case 2:
+        target = "Medium";
+        break;
+    case 3:
+        target = "Low";
+        break;
+    default:
+        cout<<"Khong hop le!\n";
+        break;
+    }
+    bool found = false;
+    for(int i =0; i< stt; i++){
+    if (priority[i] == target){
+        cout<<"\n==========\n";
+        cout<<"STT: "<< i<< endl;
+        cout<<"Date: "<< day[i] << "/"<<month[i]<<"/"<<year[i]<<endl;
+        cout<<"Time: "<< hour[i]<<":"<<minute[i]<<endl;
+        cout<<"Description: "<<description[i]<<endl;
+        cout<<"Priority: "<<priority[i]<<endl;
+        found = true;
+    }
+    }
+    if(!found){
+        cout<<"Khong co event nao!\n";
+    }
+}
