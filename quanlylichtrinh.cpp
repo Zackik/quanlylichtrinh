@@ -3,6 +3,7 @@
 #include <queue>
 #include <fstream>
 #include <cmath>
+#include <iomanip>
 using namespace std;
 //mang cua tung bien trong quan ly lich trinh gom ngay thang nam gio phut gioi han la 100 mang.
 int day[200], month[200], year[200], hour[200], minute[200];
@@ -239,35 +240,44 @@ void enqueueEvent(int stt){
     q[rear] = stt;
 }
 void exportQueueCSV(){
-    if(front > rear){
-        cout<<"Queue rong!\n";
+    if (front > rear){
+        cout<< "Queue rong!\n";
         return;
     }
     ofstream file("Event.csv");
+
     if(!file.is_open()){
-        cout<< "Khong mo duoc file!\n";
+        cout<<"Khong mo duoc file!\n";
         return;
     }
 
-    file << "QueueOrder,Description,Priority,State\n";
+    file<< "QueueOrder   "<<"Date   "<<"Time   "<<"Description   "<<"Priority   "<<"State\n";
     int order = 1;
     for(int i = front; i <= rear; i++){
         int index = q[i];
-        string status = (state[index] == true) ? "Done" : "Pending";
-        file<<order<<"," <<"\"" <<description[index] <<"\"" << ","
-        << "\"" << priority[index] <<"\"" << ","
-        <<"\"" << status <<"\""
-        <<"\n";
+        string status = state[index] ? "Done" : "Pending";
 
+        string date = to_string(day[index]) + "/" + to_string(month[index]) + "/" + to_string(year[index]);
+
+        string timeStr;
+
+        if(hour[index] < 10) timeStr += "0";
+        timeStr += to_string(hour[index]);
+        timeStr += ":";
+        if(minute[index]< 10) timeStr += "0";
+        timeStr += to_string(minute[index]);
+
+        file << order <<"   "<<"\""<< date << "\""<< "   "<< "\""<< timeStr << "\"" << "   "<< "\""<< description[index] << "\"" << "   " <<"\""<< priority[index] << "\"" << "   "<< "\""<<status << "\"" << "\n";
         order++;
+
     }
     file.close();
-
     writeLog("EXPORT QUEUE CSV");
-    cout<< "============\n";
-    cout<< "Export Queue CSV Successfully!\n";
-    cout<< "File: Event.csv\n";
-    cout<< "============\n";
+    cout<<"=============\n";
+    cout<<"EXport CSV Successfully!\n";
+    cout<<"File: Event.csv\n";
+    cout<<"=============\n";
+    
 }
 //sang phut
 int startMinutes(int i){
