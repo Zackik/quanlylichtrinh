@@ -331,6 +331,20 @@ int priorityValue(string p){
     if (p == "High") return 1;
     if (p == "Medium") return 2;
     if (p == "Low") return 3;
+    bool found = false;
+    if (1){
+        for(int i =0; i<stt; i++){
+            cout<<"\n==========\n";
+            cout<<"STT: "<<i<<endl;
+            cout<<"Date: "<< day[i]<<"/"<<month[i]<<"/"<<year[i]<<endl;
+            cout<<"Time: "<<hour[i]<<":"<<minute[i]<<endl;
+            cout<<"Priority: "<<priority[i]<<endl;
+            found = true;
+        }
+    }
+    if(!found){
+        cout<<"Khong co event nao!\n";
+    }
     writeLog("PRIORITY VALUE");
     return 0;
 }
@@ -1129,7 +1143,7 @@ int main(){
         cout<< "0. Thoat\n";
         cout<<"Enter chosen: ";
         cin>> chosen;
-        switch (chosen)
+        switch(chosen)
         {
         
         case 1:
@@ -1234,7 +1248,32 @@ int main(){
             //     cout<<"Khong co event nao!\n";
             // }
             // break;
-            prioritycheck();
+            // prioritycheck();
+            // int chond;
+            // cout<<"1. High\n";
+            // cout<<"2. Medium\n";
+            // cout<<"3. Low\n";
+            // cout<<"Chon: ";
+            // cin>>chond;
+            // if (chond ==1){
+            //     priorityValue("High");
+            //     break;
+            // }
+            // else if(chond == 2){
+            //     priorityValue("Medium");
+            //     break;
+            // }
+            // else if(chond == 3){
+            //     priorityValue("Low");
+            //     break;
+            // }
+            // else{
+            //     cout<<"Nhap lai!\n";
+            //     break;
+            // }
+            // break;
+            // priorityCheck();
+            sortPriority();
             break;
         case 10:
             dequeueEvent();
@@ -1301,13 +1340,53 @@ int main(){
          }
          return 0;
 }
-//string priority test
-bool checkPriority(string p){
-    if(p == "High" || p =="Medium" || p == "Low"){
-        return true;
+string convertPriority(int chon){
+    switch (chon)
+    {
+    case 1:
+        return "High";
+    case 2:
+        return "Medium";
+    case 3:
+        return "Low";
+    
+    default:
+        return "Inavlid";
     }
-    return false;
 }
+void priorityCheck(){
+    int chon;
+    cout<<"1. High\n";
+    cout<<"2. Medium\n";
+    cout<<"3. Low\n";
+    cout<<"Chon: ";
+    string target = convertPriority(chon);
+    if(target == "Inavlid"){
+        cout<<"Khong hop le!\n";
+        return;
+    }
+    bool found = false;
+    for(int i =0; i<stt;i++){
+        if(priority[i] == target){
+            cout<<"\n===========\n";
+            cout<<"STT: "<<i<<endl;
+            cout<<"Date: "<< day[i]<<"/"<<month[i]<<'/'<<year[i]<<endl;
+            cout<<"Time: "<<hour[i]<<":"<<minute[i]<<endl;
+            cout<<"Priority: "<<priority[i]<<endl;
+            found = true;
+        }
+    }
+    if(!found){
+        cout<<"Khong co event nao!\n";
+    }
+}
+//string priority test
+// bool checkPriority(string p){
+//     if(p == "High" || p =="Medium" || p == "Low"){
+//         return true;
+//     }
+//     return false;
+// }
 //unit test
 
 //test sort
