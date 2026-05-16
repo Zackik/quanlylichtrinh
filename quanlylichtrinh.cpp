@@ -25,7 +25,7 @@ string places[7] = {"Sunday", "Monday", "Tuesday", "Webnesday", "Thursday", "Fri
 string key[200];
 // day la stt cua tung sk duoc nhan vao va co id rieng.
 int stt = 0;
-//logging
+//logging in ra file txt hien thi [day/month/year hh:mm] [string action] 
 void writeLog(string action){
     ofstream file(
         "log.txt", ios::app);
@@ -86,18 +86,24 @@ void ADD(){
     cout<<"Choose: ";
     cin>>chooseState;
     cin.ignore();
-    switch (chooseState)
-    {
-    case 0:
-        state[stt] = "Pending";
-        break;
-    case 1:
-        state[stt]  = "Done";
-        break;
+    if(chooseState == 0 || chooseState == 1 || chooseState == 2){
+        switch (chooseState)
+        {
+            case 0:
+                state[stt] = "Pending";
+                break;
+            case 1:
+                state[stt]  = "Done";
+                break;
     
-    default:
-        state[stt] = "Canceled";
-        break;
+            default:
+                state[stt] = "Canceled";
+                break;
+        }
+    }
+    else{
+        cout<<"Nhap lai!\n";
+        return;
     }
     
 
@@ -161,7 +167,7 @@ void ADD(){
         break;
     default:
         category[stt] = "Personal";
-    
+        break;
     }
     
     int m = month[stt];
@@ -202,12 +208,6 @@ void ADD(){
     
     int p = abs(diff/ 60);
     cout<<"Con lai: "<< k <<"Ngay: "<< h <<" gio "<< p <<" phut\n";
-
-    //
-    // if (diff < 0 && state[stt] == "Pending"){
-    //     state[stt] = "Expired";
-    // }
-   
     
     cout<<"";
     stt++;
@@ -218,7 +218,8 @@ void ADD(){
 }
 
 
-//dequeue
+//dequeue neu front = 0 dau tien va rear rear ++ cuoi front > rear rong 
+//lay phan tu va xoa phan tu dau tien FIFO
 void dequeueEvent(){
     if (front > rear){
         cout<<"Queue rong!\n";
@@ -230,7 +231,7 @@ void dequeueEvent(){
     cout<<"STT: "<<index<<endl;
     cout<<"Description: "<<description[index]<<endl;
 }
-//enqueue
+//enqueue them vao cuoi hang queue
 void enqueueEvent(int stt){
     if (rear == 201 -1){
         cout<<"Queue full!\n";
@@ -239,6 +240,7 @@ void enqueueEvent(int stt){
     rear++;
     q[rear] = stt;
 }
+//export Queue csv 
 void exportQueueCSV(){
     if (front > rear){
         cout<< "Queue rong!\n";
@@ -279,13 +281,16 @@ void exportQueueCSV(){
     cout<<"=============\n";
     
 }
-//sang phut
+//sang phut bat dau
 int startMinutes(int i){
     return hour[i] * 60 + minute[i];
 }
+//sang phut ket thuc
 int endMinutes(int i){
     return startMinutes(i) + duration[i];
 }
+//trung lap khoang thoi gian va thoi i de thay va day month year
+//  1  = 0 old 1 ; new 0
 bool checkConflict(){
     int newStart = startMinutes(stt);
     int newEnd = endMinutes(stt);
@@ -348,7 +353,7 @@ int priorityValue(string p){
     writeLog("PRIORITY VALUE");
     return 0;
 }
-//sort priority
+//sort priority selection sort
 void sortPriority(){
     for(int i =0; i< stt -1; i++){
         int minIndex = i;
@@ -384,6 +389,11 @@ void sortPriority(){
             tempStr = description[i];
             description[i] = description[minIndex];
             description[minIndex] = tempStr;
+
+            string tempPriority;
+            tempPriority = priority[i];
+            priority[i] = priority[minIndex];
+            priority[minIndex] = tempPriority;
 
             
         }
@@ -642,6 +652,7 @@ void sort(){
             description[minIndex] = tempStr;
         }
     }
+    writeLog("SORT SELECTION");
     cout<<"Sort successfully!"<<endl;
     
 }
@@ -715,7 +726,7 @@ void sort(){
 //     cout<<"Binary sort successfully!\n";
 // }
 // La tim kiem tu khoa trong description cua tung su kien va in ra (value key).
-void search(){
+//void search(){
     // int chon;
     // bool found = false;
     // cout<<"===================MENU===============";
@@ -859,32 +870,32 @@ void search(){
     //     return;
     // }
     
-    bool found = false;
-    // tim kiem linh gom address, state, author,... author sap xep goi y theo thu tu
-    for(int i = 0; i < stt; i++){
-        cout<<" Match found at stt: "<< i <<" Person to meet: "<< person_to_meet[i]<< endl;
-    }
+    // bool found = false;
+    // // tim kiem linh gom address, state, author,... author sap xep goi y theo thu tu
+    // for(int i = 0; i < stt; i++){
+    //     cout<<" Match found at stt: "<< i <<" Person to meet: "<< person_to_meet[i]<< endl;
+    // }
     
-    string key;
-    cout<< "Enter a word to search: ";
-    cin.ignore();
-    getline(cin, key);
-    if (key.empty()){
-        cout<<"chuoi can tim khong co\n";
-        return;
-    }
-    for (int i =0; i< stt; i++){
-        if (description[i].find(key) != string::npos){
-            cout<< "Match found at stt: "<<  i << " Nam: "<< year[i]<< 
-            " thang: "<<month[i]<<" ngay: "<<day[i]<< " Hour: "<< hour[i]<< 
-            " minute: "<< minute[i]<< endl;
-            found = true;
-        }
-    }
-    if (!found){
-        cout<<" No match found."<< endl;
-    }
-}
+    // string key;
+    // cout<< "Enter a word to search: ";
+    // cin.ignore();
+    // getline(cin, key);
+    // if (key.empty()){
+    //     cout<<"chuoi can tim khong co\n";
+    //     return;
+    // }
+    // for (int i =0; i< stt; i++){
+    //     if (description[i].find(key) != string::npos){
+    //         cout<< "Match found at stt: "<<  i << " Nam: "<< year[i]<< 
+    //         " thang: "<<month[i]<<" ngay: "<<day[i]<< " Hour: "<< hour[i]<< 
+    //         " minute: "<< minute[i]<< endl;
+    //         found = true;
+    //     }
+    // }
+    // if (!found){
+    //     cout<<" No match found."<< endl;
+    // }
+//}
 // Tim kiem nguoi can gap mat tron su kien cua lich trinh voi (value keyperson)
 // void search_person_to_meet(){
 //     bool found = false;
@@ -941,6 +952,7 @@ void searchPersonBinary(){
         cout<<"Khong tim thay!\n";
         return;
     }
+    writeLog("SEARCH PERSONAL BINARY");
 }
 //Binary search address
 void Search_address_binary(){
@@ -969,6 +981,7 @@ void Search_address_binary(){
     if(!found){
         cout<<"KHong tim thay!\n";
     }
+    writeLog("SEARCH ADDRESS BINARY");
 
 }
 
@@ -996,27 +1009,27 @@ void Search_address_binary(){
 //     }
 // }
 //Tim kiem email trong su kien (value keyemail)
-void search_email(){
-    bool found = false;
-    string keyemail;
-    cout<<" Enter a word to search (email): ";
-    cin.ignore();
-    getline(cin, keyemail);
-    if (keyemail.empty()){
-        cout<<"Moi nhap thong tin vao\n";
-        return;
-    }
-    for(int i =0; i<stt; i++){
-        if(email[i].find(keyemail) != string::npos){
-            cout<<" Match found at stt: "<< i << " Eamil: "<<email[i]<<endl;
-            found = true;
-    }
-    }
-    if(!found){
-        cout<<"Khong tim thay ket qua!"<<endl;
-        return;
-    }
-}
+// void search_email(){
+//     bool found = false;
+//     string keyemail;
+//     cout<<" Enter a word to search (email): ";
+//     cin.ignore();
+//     getline(cin, keyemail);
+//     if (keyemail.empty()){
+//         cout<<"Moi nhap thong tin vao\n";
+//         return;
+//     }
+//     for(int i =0; i<stt; i++){
+//         if(email[i].find(keyemail) != string::npos){
+//             cout<<" Match found at stt: "<< i << " Eamil: "<<email[i]<<endl;
+//             found = true;
+//     }
+//     }
+//     if(!found){
+//         cout<<"Khong tim thay ket qua!"<<endl;
+//         return;
+//     }
+// }
 
 void SearchEmailBinary(){
     string keyEmail_Binary;
@@ -1044,6 +1057,7 @@ void SearchEmailBinary(){
     if(!found){
         cout<<"Khong tim that!\n";
     }
+    writeLog("SEARCH EMAIL BINARY");
 }
 //Tim kiem trang thai (value keystate)
 // void state_trangthai(){
@@ -1104,6 +1118,7 @@ void Revenue(){
         cout<<" "<< tempRev[i];
         cout<<endl;
     }
+    writeLog("REVENUE");
     cout<<"Revenue thanh cong!"<<endl;
 }
 
@@ -1139,7 +1154,8 @@ int main(){
         cout<< "12. Unit test serach\n";
         cout<< "13. Log\n";
         cout<< "14. Search test\n";
-        cout<< "15. \n";
+        cout<<" 15. enqueue\n";
+        
         cout<< "0. Thoat\n";
         cout<<"Enter chosen: ";
         cin>> chosen;
@@ -1334,52 +1350,55 @@ int main(){
                         }
                     }
                     break;
+        case 15:
+                    
+                    break;
         
                 }
     
          }
          return 0;
 }
-string convertPriority(int chon){
-    switch (chon)
-    {
-    case 1:
-        return "High";
-    case 2:
-        return "Medium";
-    case 3:
-        return "Low";
+// string convertPriority(int chon){
+//     switch (chon)
+//     {
+//     case 1:
+//         return "High";
+//     case 2:
+//         return "Medium";
+//     case 3:
+//         return "Low";
     
-    default:
-        return "Inavlid";
-    }
-}
-void priorityCheck(){
-    int chon;
-    cout<<"1. High\n";
-    cout<<"2. Medium\n";
-    cout<<"3. Low\n";
-    cout<<"Chon: ";
-    string target = convertPriority(chon);
-    if(target == "Inavlid"){
-        cout<<"Khong hop le!\n";
-        return;
-    }
-    bool found = false;
-    for(int i =0; i<stt;i++){
-        if(priority[i] == target){
-            cout<<"\n===========\n";
-            cout<<"STT: "<<i<<endl;
-            cout<<"Date: "<< day[i]<<"/"<<month[i]<<'/'<<year[i]<<endl;
-            cout<<"Time: "<<hour[i]<<":"<<minute[i]<<endl;
-            cout<<"Priority: "<<priority[i]<<endl;
-            found = true;
-        }
-    }
-    if(!found){
-        cout<<"Khong co event nao!\n";
-    }
-}
+//     default:
+//         return "Inavlid";
+//     }
+// }
+// void priorityCheck(){
+//     int chon;
+//     cout<<"1. High\n";
+//     cout<<"2. Medium\n";
+//     cout<<"3. Low\n";
+//     cout<<"Chon: ";
+//     string target = convertPriority(chon);
+//     if(target == "Inavlid"){
+//         cout<<"Khong hop le!\n";
+//         return;
+//     }
+//     bool found = false;
+//     for(int i =0; i<stt;i++){
+//         if(priority[i] == target){
+//             cout<<"\n===========\n";
+//             cout<<"STT: "<<i<<endl;
+//             cout<<"Date: "<< day[i]<<"/"<<month[i]<<'/'<<year[i]<<endl;
+//             cout<<"Time: "<<hour[i]<<":"<<minute[i]<<endl;
+//             cout<<"Priority: "<<priority[i]<<endl;
+//             found = true;
+//         }
+//     }
+//     if(!found){
+//         cout<<"Khong co event nao!\n";
+//     }
+// }
 //string priority test
 // bool checkPriority(string p){
 //     if(p == "High" || p =="Medium" || p == "Low"){
@@ -1463,42 +1482,42 @@ void priorityCheck(){
 //         cout<<"TEST FAIL\n";
 //     }
 // }
-void prioritycheck(){
-    int chon;
-    cout<<"1. High\n";
-    cout<<"2 .Medium\n";
-    cout<<"3 .Low\n";
-    cout<<"Chon: ";
-    cin>>chon;
-    string target;
-    switch (chon)
-    {
-    case 1:
-        target = "High";
-        break;
-    case 2:
-        target = "Medium";
-        break;
-    case 3:
-        target = "Low";
-        break;
-    default:
-        cout<<"Khong hop le!\n";
-        break;
-    }
-    bool found = false;
-    for(int i =0; i< stt; i++){
-    if (priority[i] == target){
-        cout<<"\n==========\n";
-        cout<<"STT: "<< i<< endl;
-        cout<<"Date: "<< day[i] << "/"<<month[i]<<"/"<<year[i]<<endl;
-        cout<<"Time: "<< hour[i]<<":"<<minute[i]<<endl;
-        cout<<"Description: "<<description[i]<<endl;
-        cout<<"Priority: "<<priority[i]<<endl;
-        found = true;
-    }
-    }
-    if(!found){
-        cout<<"Khong co event nao!\n";
-    }
-}
+// void prioritycheck(){
+//     int chon;
+//     cout<<"1. High\n";
+//     cout<<"2 .Medium\n";
+//     cout<<"3 .Low\n";
+//     cout<<"Chon: ";
+//     cin>>chon;
+//     string target;
+//     switch (chon)
+//     {
+//     case 1:
+//         target = "High";
+//         break;
+//     case 2:
+//         target = "Medium";
+//         break;
+//     case 3:
+//         target = "Low";
+//         break;
+//     default:
+//         cout<<"Khong hop le!\n";
+//         break;
+//     }
+//     bool found = false;
+//     for(int i =0; i< stt; i++){
+//     if (priority[i] == target){
+//         cout<<"\n==========\n";
+//         cout<<"STT: "<< i<< endl;
+//         cout<<"Date: "<< day[i] << "/"<<month[i]<<"/"<<year[i]<<endl;
+//         cout<<"Time: "<< hour[i]<<":"<<minute[i]<<endl;
+//         cout<<"Description: "<<description[i]<<endl;
+//         cout<<"Priority: "<<priority[i]<<endl;
+//         found = true;
+//     }
+//     }
+//     if(!found){
+//         cout<<"Khong co event nao!\n";
+//     }
+// }
