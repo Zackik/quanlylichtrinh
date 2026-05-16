@@ -290,6 +290,7 @@ bool checkConflict(){
         }
     }
     return false;
+    
 }
 // in ra cac ngay thang nam gio phut cua cac su kien da nhap vao.
 void Display(){
@@ -685,10 +686,7 @@ void sort(){
         person_to_meet[pos] = tempPerson;
         email[pos] = tempEmail;
         state[pos] = tempState;
-
-        
     }
-    
     writeLog("SORT EVENT");
     cout<<"Binary sort successfully!\n";
 }
@@ -851,20 +849,17 @@ void search(){
         cout<<"chuoi can tim khong co\n";
         return;
     }
-    
     for (int i =0; i< stt; i++){
         if (description[i].find(key) != string::npos){
             cout<< "Match found at stt: "<<  i << " Nam: "<< year[i]<< 
             " thang: "<<month[i]<<" ngay: "<<day[i]<< " Hour: "<< hour[i]<< 
             " minute: "<< minute[i]<< endl;
             found = true;
-            
         }
     }
     if (!found){
         cout<<" No match found."<< endl;
     }
-
 }
 // Tim kiem nguoi can gap mat tron su kien cua lich trinh voi (value keyperson)
 // void search_person_to_meet(){
@@ -1104,13 +1099,7 @@ int main(){
             cout<<"Ban chi co the them 100 su kien!"<< endl;
             break;
         }
-        if(checkConflict()){
-        cout<<"\n[WARNING]";
-        cout<<" CONFLICT EVENT!\n";
-        writeLog("WARNING" "CONFLICT EVENT");
-        }
-
-
+        
         cout<< "\n=====Menu=====\n";
         cout<< "1. Them su kien\n";
         cout<< "2. In ra su kien\n";
@@ -1123,13 +1112,23 @@ int main(){
         cout<< "9. Uu tien ngay thang nam gio phut\n";
         cout<< "10. \n";
         cout<< "11. Xuat file .csv\n";
+        cout<< "12. Unit test serach\n";
+        cout<< "13. Log\n";
+        cout<< "14. Search test\n";
+        cout<< "15. \n";
         cout<< "0. Thoat\n";
         cout<<"Enter chosen: ";
         cin>> chosen;
         switch (chosen)
         {
+        
         case 1:
-            ADD();
+        ADD();
+        if(checkConflict){
+            cout<<"\n[WARNING]";
+            cout<<"CONFLICT EVENT!\n";
+            writeLog("CONFLICT EVENT");
+        }
             break;
         case 2:
             Display();
@@ -1195,105 +1194,137 @@ int main(){
             exportQueueCSV();
             break;
         case 12:
-            int choicee;
-            cout<<"1. Test sort";
-            cout<<"2. Binary search";
-            cout<<"3. Test conflict";
-            cout<<"Choice: ";
-            cin>>choicee;
-            switch(choicee){
-                case 1:
-                    // testSort();
+                    stt = 3;
+                    day[0] = 10;
+                    month[0] = 8;
+                    year[0] = 2026;
+
+                    day[1] = 5;
+                    month[1] = 8;
+                    year[1] = 2026;
+                    
+                    day[2] = 20;
+                    month[2] = 8;
+                    year[2] =2026;
+
+                    sort();
+                    if(day[0] = 5){
+                        cout<<"Test pass!\n";
+                    }
+                    else{
+                        cout<<"Test fail!\n";
+                    }
                     break;
-                case 2:
-                    // testSearch();
+        case 13:
+                    writeLog("REPORT");
                     break;
-                case 3:
-                    // testconflict();
+        case 14:
+                    stt = 4;
+                    person_to_meet[0] = "Thanh";
+                    person_to_meet[1] = "Tuyen";
+                    person_to_meet[2] = "Duc";
+                    person_to_meet[3] = "Anh";
+
+                    int left = 0;
+                    int right = stt - 1;
+                    int mid = (left + right)/2;
+                    bool found = false;
+                   
+
+                    while(left <= right){
+                        mid;
+                        if(person_to_meet[mid] == person_to_meet[2]){
+                            found = true;
+                            break;
+                        }
+                        else if(person_to_meet[mid] < person_to_meet[2]) {
+                            left = mid + 1;
+
+                        }
+                        else{
+                            right = mid - 1;
+                        }
+                    }
                     break;
-                default:
-                    cout<<"Nhap lai!\n";
-            }
-           
-        default:
-            if (chosen == 0) return 0;
-        }
-    }
-    return 0;
+        
+                }
+    
+         }
+         return 0;
 }
 //unit test
 
 //test sort
-void testSort(){
-    stt = 3;
-    day[0] = 10;
-    month[0] = 8;
-    year[0] = 2026;
+// void testSort(){
+//     stt = 3;
+//     day[0] = 10;
+//     month[0] = 8;
+//     year[0] = 2026;
 
-    day[1] =5;
-    month[1] = 8;
-    year[1] = 2026;
+//     day[1] =5;
+//     month[1] = 8;
+//     year[1] = 2026;
 
-    day[2] = 20;
-    month[2] = 8;
-    year[2] = 2026;
+//     day[2] = 20;
+//     month[2] = 8;
+//     year[2] = 2026;
 
-    sort();
-    if(day[0] == 5){
-        cout<<"TEST PASS\n";
-    }
-    else{
-        cout<<"TEST FAIL\n";
-    }
-}
+//     sort();
+//     if(day[0] == 5){
+//         cout<<"TEST PASS\n";
+//     }
+//     else{
+//         cout<<"TEST FAIL\n";
+//     }
+// }
 //test binary search
-void testSearch(){
-    stt = 3;
-    person_to_meet[0] = "An";
-    person_to_meet[1] = "Binh";
-    person_to_meet[2] = "Thanh";
+// void testSearch(){
+//     stt = 3;
+//     person_to_meet[0] = "An";
+//     person_to_meet[1] = "Binh";
+//     person_to_meet[2] = "Thanh";
 
-    string key = "Binh";
-    int left =0;
-    int right = stt -1;
-    bool found = false;
+//     string keySera = "Binh";
+//     int left =0;
+//     int right = stt -1;
+//     bool found = false;
 
-    while(left <= right){
-        int mid = (left + right) /2;
-        if(person_to_meet[mid] == key){
-            found = true;
-            break;
-        }
-        else if(person_to_meet[mid] < key){
-            left = mid + 1;
-        }
-        else{
-            right = mid - 1;
-        }
-    }
-    if (found){
-        cout<<"TEST PASS\n";
-    }
-    else{
-        cout<<"TEST FAIL\n";
-    }
-}
+//     while(left <= right){
+//         int mid = (left + right) /2;
+//         if(person_to_meet[mid] == keySera){
+//             found = true;
+//             break;
+//         }
+//         else if(person_to_meet[mid] < keySera){
+//             left = mid + 1;
+//         }
+//         else{
+//             right = mid - 1;
+//         }
+//     }
+//     if (found){
+//         cout<<"TEST PASS\n";
+//     }
+//     else{
+//         cout<<"TEST FAIL\n";
+//     }
+// }
 //test conflict 
-void testconflict(){
-    stt = 1;
-    hour[0] = 14;
-    minute[0] =0;
+// void testconflict(){
+//     stt = 1;
+//     hour[0] = 14;
+//     minute[0] =0;
 
-    duration[0] = 120;
+//     duration[0] = 120;
 
-    hour[1] = 15;
-    minute[1] =0;
-    duration[1] = 30;
+//     hour[1] = 15;
+//     minute[1] =0;
+//     duration[1] = 30;
 
-    if(checkConflict()){
-        cout<<"TEST PASS\n";
-    }
-    else{
-        cout<<"TEST FAIL\n";
-    }
-}
+//     if(checkConflict()){
+//         cout<<"TEST PASS\n";
+//     }
+//     else{
+//         cout<<"TEST FAIL\n";
+//     }
+// }
