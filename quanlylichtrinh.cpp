@@ -3,6 +3,7 @@
 #include <queue>
 #include <fstream>
 #include <cmath>
+#include <cassert>
 #include <iomanip>
 using namespace std;
 //mang cua tung bien trong quan ly lich trinh gom ngay thang nam gio phut gioi han la 100 mang.
@@ -1153,15 +1154,14 @@ int main(){
         cout<< "11. Xuat file .csv\n";
         cout<< "12. Unit test serach\n";
         cout<< "13. Log\n";
-        cout<< "14. Search test\n";
-        cout<<" 15. enqueue\n";
-        
+        cout<< "14. Search test\n"; 
         cout<< "0. Thoat\n";
         cout<<"Enter chosen: ";
         cin>> chosen;
         switch(chosen)
         {
-        
+        case 0:
+            return 0;
         case 1:
         ADD();
         if(checkConflict){
@@ -1323,6 +1323,8 @@ int main(){
                     writeLog("REPORT");
                     break;
         case 14:
+                    // testSearch();
+                    
                     stt = 4;
                     person_to_meet[0] = "Thanh";
                     person_to_meet[1] = "Tuyen";
@@ -1349,13 +1351,17 @@ int main(){
                             right = mid - 1;
                         }
                     }
-                    break;
-        case 15:
-                    
+                    if(found){
+                        cout<<"[PASS] Tim thay"<<endl;
+                    }
+                    else{
+                        cout<<"[FAIL] Khong tim thay "<< endl;
+                    }
+                    return 0;
                     break;
         
+        
                 }
-    
          }
          return 0;
 }
@@ -1432,37 +1438,37 @@ int main(){
 //     }
 // }
 //test binary search
-// void testSearch(){
-//     stt = 3;
-//     person_to_meet[0] = "An";
-//     person_to_meet[1] = "Binh";
-//     person_to_meet[2] = "Thanh";
+void testSearch(){
+    stt = 3;
+    person_to_meet[0] = "An";
+    person_to_meet[1] = "Binh";
+    person_to_meet[2] = "Thanh";
 
-//     string keySera = "Binh";
-//     int left =0;
-//     int right = stt -1;
-//     bool found = false;
+    string keySera = "Binh";
+    int left =0;
+    int right = stt -1;
+    bool found = false;
 
-//     while(left <= right){
-//         int mid = (left + right) /2;
-//         if(person_to_meet[mid] == keySera){
-//             found = true;
-//             break;
-//         }
-//         else if(person_to_meet[mid] < keySera){
-//             left = mid + 1;
-//         }
-//         else{
-//             right = mid - 1;
-//         }
-//     }
-//     if (found){
-//         cout<<"TEST PASS\n";
-//     }
-//     else{
-//         cout<<"TEST FAIL\n";
-//     }
-// }
+    while(left <= right){
+        int mid = (left + right) /2;
+        if(person_to_meet[mid] == keySera){
+            found = true;
+            break;
+        }
+        else if(person_to_meet[mid] < keySera){
+            left = mid + 1;
+        }
+        else{
+            right = mid - 1;
+        }
+    }
+    if (found){
+        cout<<"TEST PASS\n";
+    }
+    else{
+        cout<<"TEST FAIL\n";
+    }
+}
 //test conflict 
 // void testconflict(){
 //     stt = 1;
@@ -1521,3 +1527,39 @@ int main(){
 //         cout<<"Khong co event nao!\n";
 //     }
 // }
+
+bool validDay(int d){
+    return d > 0 && d <= 31;
+}
+bool validMonth(int m){
+    return m > 0 && m <= 12;
+}
+bool validHour(int h){
+    return h >= 0 && h < 24;
+}
+bool validMinute(int m){
+    return m >= 0 && m < 60;
+}
+void test(string name, bool result){
+    if(result){
+        cout<<"[PASS]"<< name<<endl;
+    }
+    else{
+        cout<<"[FAIL]"<< name << endl;
+    }
+}
+
+void testday_month_year_hour_minute(){
+    test("Day = 15", validDay(15) == true);
+    test("Day = 40", validDay(40) == false);
+
+    test("Month = 5", validMonth(5) == true);
+    test("Month = 15", validMonth(15) == false);
+
+    test("Hour = 23", validHour(23) == true);
+    test("Hour = 30", validHour(30) == false);
+
+    test("Minute = 45", validMinute(45) == true);
+    test("Minute = 70", validMinute(70) == false);
+    return;
+}
