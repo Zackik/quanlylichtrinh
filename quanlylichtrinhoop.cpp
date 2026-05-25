@@ -20,7 +20,7 @@ class quanly{
         void log(string action);
         void edit();
         void exportQueueCSV();
-        void checkConflict();
+        bool checkConflict();
         void display();
         int priorityValue(string p);
         void sort();
@@ -29,9 +29,33 @@ class quanly{
         int startMinute(int i);
         int endMinute(int i);
         void sortPriority();
+        void commitAdd();
+        void clear(int i);
 
-        ~quanly() = default;
+        ~quanly(){
+            cout<<"\nCam on da su dung chuong trinh!\n";
+        }
 };
+void quanly::clear(int i){
+    day[i] = 0;
+    month[i] = 0;
+    year[i] = 0;
+    hour[i] =0;
+    minute[i] = 0;
+    duration[i] =0;
+    description[i] = ""; address[i] = "";
+    person_to_meet[i] = ""; email[i] = ""; priority[i] = ""; category[i] = "";
+    status[i] = false;
+
+}
+//Gan vao mang
+void quanly::commitAdd(){
+    q[++rear] = stt;
+    stt++;
+    log("ADD EVENT");
+    cout<<"ADD SUCCESSFULLY!\n";
+}
+//sap xep thu tu selection sort
 void quanly::sort(){
     cout<<"=====================\n";
     cout<<"=======SORT=========\n";
@@ -259,29 +283,77 @@ int quanly::priorityValue(string p){
 }
 //IN ra cac thong tin trong su kien khi in ra
 void quanly::display(){
-    cout<<"=======================\n";
-    cout<<"=======DISPLAY=========\n";
-    if(stt < 0 || stt >= 200) cout<<"Khong the in ra neu khong co stt va stt lon hon 200"; return;
-    for(int i =0; i<stt; i++){
-        int m = month[i], n = year[i], d = day[i], a = (14 -m)/ 12, y = n - a, mon = m + 12*a -2, 
-        dayofweek = (d + y + y/4 - y/100 + y/400 + (31 * mon)/12)%7;
-        cout<<"STT: "<<i<< "-->"<<hour[i]<<" : "<<minute[i]<<" "<< day[i]<<"/"<<month[i]<<"/"<<year[i]<< "\n";
-        cout<<"Thu: "<<places[dayofweek]<<" "<<"Description: "<<description[i]<<" "<<" Address: "<<address[i]<< "\n";
-        cout<<"Person to meet: "<<person_to_meet[i]<< " "<<"Email: "<<email[i]<<endl;
-        cout<<"State: "<<status[i]<< " "<< "Priority: "<<priority[i]<<" "<<"Category: "<<category[i]<<endl;
+    if(stt == 0){
+        cout<<"Khong co su kien nao!\n";
+        return;
     }
+
+    cout<<"\n========== EVENT LIST ==========\n";
+
+    for(int i = 0; i < stt; i++){
+
+        int m = month[i];
+        int y = year[i];
+        int d = day[i];
+
+        int a = (14 - m) / 12;
+        int yy = y - a;
+        int mon = m + 12 * a - 2;
+
+        int dayOfWeek =
+            (d + yy + yy/4 - yy/100 + yy/400 +
+            (31 * mon)/12) % 7;
+
+        cout<<"\n---------------------------------\n";
+        cout<<"STT        : "<<i<<endl;
+        cout<<"Date       : "
+            <<day[i]<<"/"
+            <<month[i]<<"/"
+            <<year[i]
+            <<" ("<<places[dayOfWeek]<<")\n";
+
+        cout<<"Time       : "
+            <<hour[i]<<":"
+            <<minute[i]<<endl;
+
+        cout<<"Description: "
+            <<description[i]<<endl;
+
+        cout<<"Address    : "
+            <<address[i]<<endl;
+
+        cout<<"Meet       : "
+            <<person_to_meet[i]<<endl;
+
+        cout<<"Email      : "
+            <<email[i]<<endl;
+
+        cout<<"Priority   : "
+            <<priority[i]<<endl;
+
+        cout<<"Category   : "
+            <<category[i]<<endl;
+
+        cout<<"Status     : "
+            <<status[i]<<endl;
+    }
+
+    cout<<"\n===============================\n";
 }
 // Kiem tra se thong tin co bi trung hay khong va nguoc lai
-void quanly::checkConflict(){
-    bool kt = false;
+bool quanly::checkConflict(){
     int newStart = startMinute(stt), newEnd = endMinute(stt);
     for(int i =0; i<stt; i++){
         if(day[i] == day[stt] && month[i] == month[stt] && year[i] == year[stt]){
             int oldStart = startMinute(i), oldEnd = endMinute(i);
-            if(newStart < oldEnd && newStart > oldStart) kt = true;
+            if(newStart < oldEnd && newEnd > oldStart){
+                cout<<"\n=============\n";
+                cout<<"Trung voi su kien STT "<<i<<endl;
+                return true;
+            }
         }
     }
-    kt = false;
+    return false;
 }
 int quanly::startMinute(int i){
     return hour[i] * 60 + minute[i];
@@ -396,17 +468,44 @@ void quanly::log(string action){
 }
 //Xoa su kien theo lua chon cua su kien muon xoa va cong don thanh cong se in ra successfully
 void quanly::delet(){
-    int index;
-    cout<<"Nhap stt need delete: "; cin>>index;
-    if(index < 0 || index >= stt) cout<<"Sai stt!\n"; return;
-    for(int i = index; i< stt - 1; i++){
-        day[i] = day[i + 1]; month[i] = month[i + 1]; year[i] = year[i + 1]; hour[i] = hour[i + 1]; minute[i] = minute[i + 1];
-        description[i] = description[i + 1]; email[i] = email[i + 1]; person_to_meet[i] = person_to_meet[i + 1]; duration[i] =duration[i + 1];
-        status[i] = status[i + 1]; category[i] = category[i + 1];
+     if(stt == 0){
+        cout<<"Danh sach rong!\n";
+        return;
     }
+
+    int index;
+
+    cout<<"Nhap STT can xoa: ";
+    cin>>index;
+
+    if(index < 0 || index >= stt){
+        cout<<"Sai STT!\n";
+        return;
+    }
+
+    for(int i = index; i < stt - 1; i++){
+
+        day[i] = day[i + 1];
+        month[i] = month[i + 1];
+        year[i] = year[i + 1];
+        hour[i] = hour[i + 1];
+        minute[i] = minute[i + 1];
+
+        description[i] = description[i + 1];
+        address[i] = address[i + 1];
+        person_to_meet[i] = person_to_meet[i + 1];
+        email[i] = email[i + 1];
+
+        priority[i] = priority[i + 1];
+        category[i] = category[i + 1];
+        duration[i] = duration[i + 1];
+        statistic[i] = statistic[i + 1];
+        status[i] = status[i + 1];
+    }
+
     stt--;
-    log("DELETE EBENT");
-    cout<<"DELETE SUCCESSFULLY INDEX: "<<index<<endl;
+
+    cout<<"Xoa thanh cong!\n";
 }
 //Them su kien voi cac phuong thuc theo dinh dang cu the va se in ra successfully khi thanh cong va neu nhap sai se in lai thong tin
 void quanly::add(){
@@ -414,16 +513,25 @@ void quanly::add(){
     cout<< "Nhap them su kien theo dinh dang (hh:mm dd/mm/yyyy): "<< endl;
     cin >> hour[stt]>>c1>>minute[stt]>>day[stt]>>c2>>month[stt]>>c3>>year[stt];
     if(day[stt] < 0 || day[stt] > 31){
-        cout<<"Moi nhap lai!"<< endl; return;
+        cout<<"Moi nhap lai!"<< endl; 
+        clear(stt);
+        return;
+        
     }
     if(month[stt] < 0 || month[stt] >= 13){
-        cout<<"Moi nhap lai!"<<endl; return;
+        cout<<"Moi nhap lai!"<<endl;
+        clear(stt);
+        return; 
     }
     if(hour[stt]< 0 || hour[stt] >23){
-        cout<<"Moi nhap lai!"<<endl; return;
+        cout<<"Moi nhap lai!"<<endl;
+        clear(stt);
+        return; 
     }
     if(minute[stt]< 0|| minute[stt]>59){
-        cout<<"Moi nhap lai!"<<endl; return;
+        cout<<"Moi nhap lai!"<<endl;
+        clear(stt);
+        return; 
     }
     cout<<"===================\n";
     cout<<"Duration: ";
@@ -463,7 +571,9 @@ void quanly::add(){
         }
     }
     else{
-        cout<<"Moi nhap lai!"<<endl; return;
+        cout<<"Moi nhap lai!"<<endl;
+        clear(stt);
+        return; 
     }
 
     cout<<"============\n";
@@ -552,18 +662,66 @@ void quanly::add(){
 
     int p = abs(diff/60);
     cout<<"Thoi gian con lai: "<<" Ngay: "<<k<<" gio: "<<h<<" phut: "<<p<<endl;
-    
-    stt++;
-    rear++;
-    q[rear] = stt;
-    log("ADD EVENT");
-    cout<<"ADD SUCCESSFULLY!"<<endl;
 }
 int main(){
-    while(true){
-        quanly p;
-        p.add();
-        p.checkConflict();
-    }
+    quanly p;
+    int choice;
+    do{
+        cout<<"\n=====MENU=====\n";
+        cout<<"1. ADD\n";
+        cout<<"2. Delete\n";
+        cout<<"3. Edit\n";
+        cout<<"4. Display\n";
+        cout<<"5. Sort\n";
+        cout<<"6. Sort prioority\n";
+        cout<<"7. Search\n";
+        cout<<"8. Export CSV\n";
+        cout<<"9. Log\n";
+        cout<<"0. Exit\n";
+        cout<<"Nhap lua chon: ";
+        cin>>choice;
+        switch (choice)
+        {
+        case 1:
+            p.add();
+            if(p.checkConflict()){
+                cout<<"Them su kien that ba!\n";
+                cout<<"Ly do: Trung lich\n";
+            }
+            else{
+                p.commitAdd();
+            }
+            break;
+        case 2:
+            p.delet();
+            break;
+        case 3:
+            p.edit();
+            break;
+        case 4:
+            p.display();
+            break;
+        case 5:
+            p.sort();
+            break;
+        case 6:
+            p.sortPriority();
+            break;
+        case 7:
+            p.search();
+            break;
+        case 8:
+            p.exportQueueCSV();
+            break;
+        case 9:
+            p.log("REPORT");
+            break;
+        case 0:
+            cout<<"Tam biet!\n";
+            break;
+        default:
+            cout<<"Lua chon khong hop le!\n";
+        }
+    }while (choice != 0);
     return 0;
 }
