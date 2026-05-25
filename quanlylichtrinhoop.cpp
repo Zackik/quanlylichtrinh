@@ -22,15 +22,255 @@ class quanly{
         void exportQueueCSV();
         void checkConflict();
         void display();
-        void priorityValue();
+        int priorityValue(string p);
         void sort();
         void search();
         void countDown();
         int startMinute(int i);
         int endMinute(int i);
+        void sortPriority();
 
         ~quanly() = default;
 };
+void quanly::sort(){
+    cout<<"=====================\n";
+    cout<<"=======SORT=========\n";
+    int minIndex = 0;
+    for(int i = 0; i< stt -1; i++){
+        minIndex = i;
+        for(int j =i + 1; j < stt; j++){
+            if (year[j] < year[minIndex] || (year[j] == year[minIndex] && month[j]  < month[minIndex])
+            || (year[j] == year[minIndex] && month[j] == month[minIndex] && day[j]< day[minIndex]) || 
+            (year[j] == year[minIndex] && month[j] == month[minIndex] && day[j] == day[minIndex] && hour[j] < hour[minIndex]) || 
+            (year[j] == year[minIndex] && month[j] == month[minIndex] && day[j] == day[minIndex] && hour[j] == hour[minIndex] && minute[j] < minute[minIndex])){
+                minIndex = j;
+            }
+        }
+        if(minIndex != i){
+            swap(person_to_meet[i], person_to_meet[minIndex]);
+                    swap(day[i], day[minIndex]); swap(month[i], month[minIndex]);
+                    swap(year[i],year[minIndex]); swap(hour[i], hour[minIndex]);
+                    swap(minute[i], minute[minIndex]); swap(description[i], description[minIndex]);
+                    swap(address[i], address[minIndex]); swap(email[i], email[minIndex]);
+                    swap(status[i], status[minIndex]); swap(priority[i], priority[minIndex]);
+                    swap(category[i], category[minIndex]); swap(duration[i], duration[minIndex]);
+                    swap(statistic[i], statistic[minIndex]);
+        }
+    }
+    log("SORT EVENT");
+    cout<<"SORT SUCCESSFULLY!"<<endl;
+}
+//Tim kiem ten cua persontomeet, email, address voi binary sort va sort de sap xep truoc xong moi tim kiem tranh sai xot trong thuat toan 
+void quanly::search(){
+    int chonsearch;
+    cout<<"\n===============\n";
+    cout<<"======SEARCH========\n";
+    cout<<"1. Person to meet\n";
+    cout<<"2. Email\n";
+    cout<<"3. Address\n";
+    cout<<"Chon search: "; cin>>chonsearch;
+    if(chonsearch == 1){
+        for(int i = 0; i< stt -1; i++){
+            for(int j = i+1; j <stt; j++){
+                if(person_to_meet[j] < person_to_meet[i]){
+                    swap(person_to_meet[i], person_to_meet[j]);
+                    swap(day[i], day[j]); swap(month[i], month[j]);
+                    swap(year[i],year[j]); swap(hour[i], hour[j]);
+                    swap(minute[i], minute[j]); swap(description[i], description[j]);
+                    swap(address[i], address[j]); swap(email[i], email[j]);
+                    swap(status[i], status[j]); swap(priority[i], priority[j]);
+                    swap(category[i], category[j]); swap(duration[i], duration[j]);
+                    swap(statistic[i], statistic[j]);
+                }
+            }
+        }
+        int left = 0, right = stt -1;
+        string key;
+        bool found = false;
+        cout<<"Nhap ten can tim: "; 
+        cin.ignore();
+        getline(cin, key);
+        while (left <= right)
+        {
+            int mid = (left + right)/2;
+            if(person_to_meet[mid] == key){
+                cout<<"\n===SEARCH====\n";
+                cout<<"STT: "<<mid<<endl;
+                cout<<"Description: "<<description[mid]<< endl;
+                cout<<"Address: "<<address[mid]<<endl;
+                cout<<"Email: "<<email[mid]<<endl;
+                found = true;
+                break;
+            }
+            if(person_to_meet[mid] < key){
+                left = mid + 1;
+            }
+            else{
+                right = mid - 1;
+            }
+            
+        }
+        log("SEARCH PERSON TO MEET");
+        cout<<"Khong tim thay!\n";
+        return;
+    }
+    else if(chonsearch == 2){
+        for(int i =0; i <stt -1; i++){
+            for(int j = i+ 1; j <stt; j++){
+                if(email[j] < email[i]){
+                    swap(person_to_meet[i], person_to_meet[j]);
+                    swap(day[i], day[j]); swap(month[i], month[j]);
+                    swap(year[i],year[j]); swap(hour[i], hour[j]);
+                    swap(minute[i], minute[j]); swap(description[i], description[j]);
+                    swap(address[i], address[j]); swap(email[i], email[j]);
+                    swap(status[i], status[j]); swap(priority[i], priority[j]);
+                    swap(category[i], category[j]); swap(duration[i], duration[j]);
+                    swap(statistic[i], statistic[j]);
+                }
+            }
+        }
+        int left = 0, right = stt -1;
+        string key;
+        bool found = false;
+        cout<<"Nhap email can tim: "; 
+        cin.ignore();
+        getline(cin, key);
+        while (left <= right)
+        {
+            int mid = (left + right)/2;
+            if(email[mid] == key){
+                cout<<"\n===SEARCH====\n";
+                cout<<"STT: "<<mid<<endl;
+                cout<<"Description: "<<description[mid]<< endl;
+                cout<<"Address: "<<address[mid]<<endl;
+                cout<<"Email: "<<email[mid]<<endl;
+                found = true;
+                break;
+            }
+            if(email[mid] < key){
+                left = mid + 1;
+            }
+            else{
+                right = mid - 1;
+            }
+            
+        }
+        log("SEARCH EMAIL");
+        cout<<"Khong tim thay!\n";
+        return;
+    }
+    else if(chonsearch == 3){
+        for(int i = 0; i < stt -1; i++){
+            for(int j = i + 1; j < stt; j++){
+                if(address[j]< address[i]){
+                    swap(person_to_meet[i], person_to_meet[j]);
+                    swap(day[i], day[j]); swap(month[i], month[j]);
+                    swap(year[i],year[j]); swap(hour[i], hour[j]);
+                    swap(minute[i], minute[j]); swap(description[i], description[j]);
+                    swap(address[i], address[j]); swap(email[i], email[j]);
+                    swap(status[i], status[j]); swap(priority[i], priority[j]);
+                    swap(category[i], category[j]); swap(duration[i], duration[j]);
+                    swap(statistic[i], statistic[j]);
+                }
+            }
+        }
+        int left = 0, right = stt -1;
+        string key;
+        bool found = false;
+        cout<<"Nhap address can tim: "; 
+        cin.ignore();
+        getline(cin, key);
+        while (left <= right)
+        {
+            int mid = (left + right)/2;
+            if(address[mid] == key){
+                cout<<"\n===SEARCH====\n";
+                cout<<"STT: "<<mid<<endl;
+                cout<<"Description: "<<description[mid]<< endl;
+                cout<<"Address: "<<address[mid]<<endl;
+                cout<<"Email: "<<email[mid]<<endl;
+                found = true;
+                break;
+            }
+            if(address[mid] < key){
+                left = mid + 1;
+            }
+            else{
+                right = mid - 1;
+            }
+            
+        }
+        log("SEARCH ADDRESS ");
+        cout<<"Khong tim thay!\n";
+        return;
+    }
+
+}
+//sap xep prioriry theo so nho nhat vi so 1 la HIGH, 2 la MEDIUM, 3 la LOW
+void quanly::sortPriority(){
+    for(int i = 0; i< stt- 1; i++){
+        int minIndex = i;
+        for(int j = i + 1; j <stt; j++){
+            if(priorityValue(priority[j]) < priorityValue(priority[minIndex])){
+                minIndex = j;
+            }
+        }
+        if(minIndex != i){
+            int temp;
+            temp = year[i]; year[i] = year[minIndex]; year[minIndex] = temp;
+            temp = month[i]; month[i] = month[minIndex]; month[minIndex] = temp;
+            temp = day[i]; day[i] = day[minIndex]; day[minIndex] = temp;
+            temp = hour[i]; hour[i] = hour[minIndex]; hour[minIndex] = temp;
+            temp = minute[i]; minute[i] = minute[minIndex]; minute[minIndex] = temp;
+            temp = duration[i]; duration[i] = duration[minIndex]; duration[minIndex] = temp;
+            temp = status[i]; status[i] = status[minIndex]; status[minIndex] = temp;
+            temp = statistic[i]; statistic[i] = statistic[minIndex]; statistic[minIndex] = temp;
+            string tempStr;
+            tempStr = description[i]; description[i]= description[minIndex]; description[minIndex] = tempStr;
+            tempStr = address[i]; address[i] = address[minIndex]; address[minIndex] = tempStr;
+            tempStr = person_to_meet[i]; person_to_meet[i] = person_to_meet[minIndex]; person_to_meet[minIndex] = tempStr;
+            tempStr = email[i]; email[i] = email[minIndex]; email[minIndex] = tempStr;
+            tempStr = priority[i]; priority[i]= priority[minIndex]; priority[minIndex] = tempStr;
+            tempStr = category[i]; category[i] = category[minIndex]; category[minIndex] = tempStr;
+        }
+        cout<<"Swap"<<i<<"<->"<<minIndex<<endl;
+    }
+    log("SORT PRIORITY");
+    cout<<"SORT PRIORITY SUCCESSFULLY!"<<endl;
+}
+// Chuyen priority string sang int voi bang so 1,2,3 va in ra priority
+int quanly::priorityValue(string p){
+    if(p == "HIGH") return 1;
+    if(p == "MEDIUM") return 2;
+    if(p == "LOW") return 3;
+    bool found = false;
+    if(1){
+        for(int i = 0; i<stt; i++){
+            cout<<"===============\n";
+            cout<<"STT: "<<i<<endl;
+            cout<<"Date: "<< day[i]<<"/"<<month[i]<<"/"<<year[i]<<endl;
+            cout<<"Time: "<<hour[i]<<" : "<<minute[i]<<endl;
+            cout<<"Priority: "<<priority[i]<<endl;
+            found = true; 
+        }
+    }
+    if(!found) cout<<"Khong co event nao!"<<endl;
+    return 0;
+}
+//IN ra cac thong tin trong su kien khi in ra
+void quanly::display(){
+    cout<<"=======================\n";
+    cout<<"=======DISPLAY=========\n";
+    if(stt < 0 || stt >= 200) cout<<"Khong the in ra neu khong co stt va stt lon hon 200"; return;
+    for(int i =0; i<stt; i++){
+        int m = month[i], n = year[i], d = day[i], a = (14 -m)/ 12, y = n - a, mon = m + 12*a -2, 
+        dayofweek = (d + y + y/4 - y/100 + y/400 + (31 * mon)/12)%7;
+        cout<<"STT: "<<i<< "-->"<<hour[i]<<" : "<<minute[i]<<" "<< day[i]<<"/"<<month[i]<<"/"<<year[i]<< "\n";
+        cout<<"Thu: "<<places[dayofweek]<<" "<<"Description: "<<description[i]<<" "<<" Address: "<<address[i]<< "\n";
+        cout<<"Person to meet: "<<person_to_meet[i]<< " "<<"Email: "<<email[i]<<endl;
+        cout<<"State: "<<status[i]<< " "<< "Priority: "<<priority[i]<<" "<<"Category: "<<category[i]<<endl;
+    }
+}
 // Kiem tra se thong tin co bi trung hay khong va nguoc lai
 void quanly::checkConflict(){
     bool kt = false;
@@ -51,6 +291,8 @@ int quanly::endMinute(int i){
 }
 // Export thong tin va kiem tra front va rear theo thong tin cua queue 
 void quanly::exportQueueCSV(){
+    cout<<"===================\n";
+    cout<<"=======EXPORT=======\n";
     if(front > rear) cout<<"Queue rong!"; return;
     ofstream file("EVENT.csv");
     if(!file.is_open()) cout<<"Khong mo duoc file!"; return;
@@ -169,7 +411,7 @@ void quanly::delet(){
 //Them su kien voi cac phuong thuc theo dinh dang cu the va se in ra successfully khi thanh cong va neu nhap sai se in lai thong tin
 void quanly::add(){
     char c1, c2, c3;
-    cout<< " Nhap them su kien theo dinh dang (hh:mm dd/mm/yyyy): "<< endl;
+    cout<< "Nhap them su kien theo dinh dang (hh:mm dd/mm/yyyy): "<< endl;
     cin >> hour[stt]>>c1>>minute[stt]>>day[stt]>>c2>>month[stt]>>c3>>year[stt];
     if(day[stt] < 0 || day[stt] > 31){
         cout<<"Moi nhap lai!"<< endl; return;
@@ -222,6 +464,34 @@ void quanly::add(){
     }
     else{
         cout<<"Moi nhap lai!"<<endl; return;
+    }
+
+    cout<<"============\n";
+    cout<<"======DOANH THU=======\n";
+    cout<<"Nhap doanh thu(USD): "; cin>>statistic[stt];
+
+    int chonpriority;
+    cout<<"===================\n";
+    cout<<"======PRIORITY=========\n";
+    cout<<"1. HIGH\n";
+    cout<<"2. MEDIUM\n";
+    cout<<"3. LOW\n";
+    cout<<"Chon Priority: ";
+    cin>>chonpriority;
+    switch (chonpriority)
+    {
+    case 1:
+        priority[stt] = "HIGH";
+        break;
+    case 2:
+        priority[stt] = "MEDIUM";
+        break;
+    case 3:
+        priority[stt] = "LOW";
+        break;
+    default:
+        priority[stt] = "LOW";
+        break;
     }
 
     int choncategory;
