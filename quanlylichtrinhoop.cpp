@@ -4,6 +4,7 @@
 #include <queue>
 #include <cmath>
 #include <fstream>
+#include <iomanip>
 using namespace std;
 class quanly{
     private:
@@ -12,8 +13,8 @@ class quanly{
         string description[200], address[200], person_to_meet[200],
          email[200], priority[200], category[200];
         const string places[7]= {"Sunday", "Monday", "Tuesday",
-             "Webnesday", "Thursday", "Friday", "Saturday"};
-        bool status[200];
+             "Wednesday", "Thursday", "Friday", "Saturday"};
+        string status[200];
     public:
         void add();
         void delet();
@@ -31,11 +32,11 @@ class quanly{
         void sortPriority();
         void commitAdd();
         void clear(int i);
-
         ~quanly(){
             cout<<"\nCam on da su dung chuong trinh!\n";
         }
 };
+//clear lai code
 void quanly::clear(int i){
     day[i] = 0;
     month[i] = 0;
@@ -46,7 +47,6 @@ void quanly::clear(int i){
     description[i] = ""; address[i] = "";
     person_to_meet[i] = ""; email[i] = ""; priority[i] = ""; category[i] = "";
     status[i] = false;
-
 }
 //Gan vao mang
 void quanly::commitAdd(){
@@ -108,6 +108,9 @@ void quanly::search(){
                 }
             }
         }
+        for(int i = 0; i< stt; i++){
+            cout<<"";
+        }
         int left = 0, right = stt -1;
         string key;
         bool found = false;
@@ -134,8 +137,10 @@ void quanly::search(){
             }
             
         }
+        if(!found){
+            cout<<"Khong tim thay!\n";
+        }
         log("SEARCH PERSON TO MEET");
-        cout<<"Khong tim thay!\n";
         return;
     }
     else if(chonsearch == 2){
@@ -178,9 +183,12 @@ void quanly::search(){
                 right = mid - 1;
             }
             
+            
+        }
+        if(!found){
+            cout<<"Khong tim thay!\n";
         }
         log("SEARCH EMAIL");
-        cout<<"Khong tim thay!\n";
         return;
     }
     else if(chonsearch == 3){
@@ -224,8 +232,11 @@ void quanly::search(){
             }
             
         }
+        if(!found){
+            cout<<"KHong tim thay!\n";
+        }
+
         log("SEARCH ADDRESS ");
-        cout<<"Khong tim thay!\n";
         return;
     }
 
@@ -247,7 +258,7 @@ void quanly::sortPriority(){
             temp = hour[i]; hour[i] = hour[minIndex]; hour[minIndex] = temp;
             temp = minute[i]; minute[i] = minute[minIndex]; minute[minIndex] = temp;
             temp = duration[i]; duration[i] = duration[minIndex]; duration[minIndex] = temp;
-            temp = status[i]; status[i] = status[minIndex]; status[minIndex] = temp;
+            
             temp = statistic[i]; statistic[i] = statistic[minIndex]; statistic[minIndex] = temp;
             string tempStr;
             tempStr = description[i]; description[i]= description[minIndex]; description[minIndex] = tempStr;
@@ -256,6 +267,7 @@ void quanly::sortPriority(){
             tempStr = email[i]; email[i] = email[minIndex]; email[minIndex] = tempStr;
             tempStr = priority[i]; priority[i]= priority[minIndex]; priority[minIndex] = tempStr;
             tempStr = category[i]; category[i] = category[minIndex]; category[minIndex] = tempStr;
+            tempStr = status[i]; status[i] = status[minIndex]; status[minIndex] = tempStr;
         }
         cout<<"Swap"<<i<<"<->"<<minIndex<<endl;
     }
@@ -266,7 +278,7 @@ void quanly::sortPriority(){
 int quanly::priorityValue(string p){
     if(p == "HIGH") return 1;
     if(p == "MEDIUM") return 2;
-    if(p == "LOW") return 3;
+    return 3;
     bool found = false;
     if(1){
         for(int i = 0; i<stt; i++){
@@ -365,14 +377,20 @@ int quanly::endMinute(int i){
 void quanly::exportQueueCSV(){
     cout<<"===================\n";
     cout<<"=======EXPORT=======\n";
-    if(front > rear) cout<<"Queue rong!"; return;
+    if(front > rear){
+        cout<<"Queue rong!"; 
+        return;
+    }
     ofstream file("EVENT.csv");
-    if(!file.is_open()) cout<<"Khong mo duoc file!"; return;
+    if(!file.is_open()){ 
+        cout<<"Khong mo duoc file!";
+        return;
+    }
     file<<"QueueOrder "<< " DATE   "<<" TIME   "<<" DESCRIPTION   "<<" PRIORITY   "<<" STATUS   "<<endl;
     int order =1;
     for(int i = front; i <= rear; i++){
         int index = q[i];
-        string state = status[index] ? "Done":"Pending";
+        string state = (status[index]=="Done") ? "Done":"Pending";
         string date = to_string(day[index]) + "/" + to_string(month[index]) + "/" + to_string(year[index]);
         string timeStr;
         if(hour[index] < 10) timeStr += "0";
@@ -462,8 +480,15 @@ void quanly::log(string action){
     ofstream file("log.txt", ios::app);
     time_t now = time(0);
     tm *current = localtime(&now);
-    file <<"["<<current->tm_mday << "/"<<current->tm_mon + 1<<"/"<<current->tm_year + 1900<< " "<<
-    current->tm_hour<<" : "<< current->tm_min<<"]"<<action<<endl;
+    file << "[" 
+     << setw(2) << setfill('0') << current->tm_mday << "/"
+     << setw(2) << current->tm_mon + 1 << "/"
+     << current->tm_year + 1900
+     << " "
+     << setw(2) << current->tm_hour << ":"
+     << setw(2) << current->tm_min
+     << "] "
+     << action << endl;
     file.close();
 }
 //Xoa su kien theo lua chon cua su kien muon xoa va cong don thanh cong se in ra successfully
@@ -509,6 +534,10 @@ void quanly::delet(){
 }
 //Them su kien voi cac phuong thuc theo dinh dang cu the va se in ra successfully khi thanh cong va neu nhap sai se in lai thong tin
 void quanly::add(){
+    if(stt >= 200){
+        cout<<"Danh sach da day!\n";
+        return;
+    }
     char c1, c2, c3;
     cout<< "Nhap them su kien theo dinh dang (hh:mm dd/mm/yyyy): "<< endl;
     cin >> hour[stt]>>c1>>minute[stt]>>day[stt]>>c2>>month[stt]>>c3>>year[stt];
@@ -673,10 +702,9 @@ int main(){
         cout<<"3. Edit\n";
         cout<<"4. Display\n";
         cout<<"5. Sort\n";
-        cout<<"6. Sort prioority\n";
+        cout<<"6. Sort priority\n";
         cout<<"7. Search\n";
         cout<<"8. Export CSV\n";
-        cout<<"9. Log\n";
         cout<<"0. Exit\n";
         cout<<"Nhap lua chon: ";
         cin>>choice;
@@ -713,11 +741,10 @@ int main(){
         case 8:
             p.exportQueueCSV();
             break;
-        case 9:
-            p.log("REPORT");
-            break;
+
         case 0:
             cout<<"Tam biet!\n";
+            p.log("REPORT");
             break;
         default:
             cout<<"Lua chon khong hop le!\n";
