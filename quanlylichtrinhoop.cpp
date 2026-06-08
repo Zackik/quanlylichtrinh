@@ -6,15 +6,55 @@
 #include <fstream>
 #include <iomanip>
 using namespace std;
+class Event{
+    public: 
+        int day;
+        int month;
+        int year;
+
+        int hour;
+        int minute;
+        int statistic;
+        int duration;
+
+        string description;
+        string address;
+        string person_to_meet;
+        string email;
+
+        string priority;
+        string category;
+        string status;
+
+        virtual void display(){
+            cout<<description<<endl;
+        }
+        virtual ~Event(){}
+};
+class MeetingEvent : public Event {
+    public: 
+        string meettingRoom;
+        void display() override{
+            cout<<"[MEETING] "<<description<<endl;
+        }
+};
+class StudyEvent : public Event{
+    public:
+        string subject;
+        void display() override{
+            cout<<"[STUDY] "<<description<<endl;
+        }
+};
 class quanly{
     private:
-        int day[200], month[200], year[200], hour[200], minute[200], statistic[200],
-         duration[200], q[200], front = 0, rear = -1, revenue[200], stt = 0;
-        string description[200], address[200], person_to_meet[200],
-         email[200], priority[200], category[200];
+        Event events[200];
         const string places[7]= {"Sunday", "Monday", "Tuesday",
              "Wednesday", "Thursday", "Friday", "Saturday"};
         string status[200];
+        int q[200];
+        int front = 0;
+        int rear = -1;
+        int stt = 0;
     public:
         void add();
         void delet();
@@ -38,15 +78,15 @@ class quanly{
 };
 //clear lai code
 void quanly::clear(int i){
-    day[i] = 0;
-    month[i] = 0;
-    year[i] = 0;
-    hour[i] =0;
-    minute[i] = 0;
-    duration[i] =0;
-    description[i] = ""; address[i] = "";
-    person_to_meet[i] = ""; email[i] = ""; priority[i] = ""; category[i] = "";
-    status[i] = false;
+    events[i].day = 0;
+    events[i].month = 0;
+    events[i].year = 0;
+    events[i].hour =0;
+    events[i].minute = 0;
+    events[i].duration =0;
+    events[i].description = ""; events[i].address = "";
+    events[i].person_to_meet = ""; events[i].email = ""; events[i].priority = ""; events[i].category = "";
+    events[i].status = false;
 }
 //Gan vao mang
 void quanly::commitAdd(){
@@ -63,22 +103,15 @@ void quanly::sort(){
     for(int i = 0; i< stt -1; i++){
         minIndex = i;
         for(int j =i + 1; j < stt; j++){
-            if (year[j] < year[minIndex] || (year[j] == year[minIndex] && month[j]  < month[minIndex])
-            || (year[j] == year[minIndex] && month[j] == month[minIndex] && day[j]< day[minIndex]) || 
-            (year[j] == year[minIndex] && month[j] == month[minIndex] && day[j] == day[minIndex] && hour[j] < hour[minIndex]) || 
-            (year[j] == year[minIndex] && month[j] == month[minIndex] && day[j] == day[minIndex] && hour[j] == hour[minIndex] && minute[j] < minute[minIndex])){
+            if (events[j].year < events[minIndex].year || (events[j].year == events[minIndex].year && events[j].month  < events[minIndex].month)
+            || (events[j].year == events[minIndex].year && events[j].month == events[minIndex].month && events[j].day < events[minIndex].day) || 
+            (events[j].year == events[minIndex].year && events[j].month == events[minIndex].month && events[j].day == events[minIndex].day && events[j].hour < events[minIndex].hour) || 
+            (events[j].year == events[minIndex].year && events[j].month == events[minIndex].month && events[j].day == events[minIndex].day && events[j].hour == events[minIndex].hour && events[j].minute < events[minIndex].minute)){
                 minIndex = j;
             }
         }
         if(minIndex != i){
-            swap(person_to_meet[i], person_to_meet[minIndex]);
-                    swap(day[i], day[minIndex]); swap(month[i], month[minIndex]);
-                    swap(year[i],year[minIndex]); swap(hour[i], hour[minIndex]);
-                    swap(minute[i], minute[minIndex]); swap(description[i], description[minIndex]);
-                    swap(address[i], address[minIndex]); swap(email[i], email[minIndex]);
-                    swap(status[i], status[minIndex]); swap(priority[i], priority[minIndex]);
-                    swap(category[i], category[minIndex]); swap(duration[i], duration[minIndex]);
-                    swap(statistic[i], statistic[minIndex]);
+            swap(events[i], events[minIndex]);
         }
     }
     log("SORT EVENT");
@@ -96,15 +129,8 @@ void quanly::search(){
     if(chonsearch == 1){
         for(int i = 0; i< stt -1; i++){
             for(int j = i+1; j <stt; j++){
-                if(person_to_meet[j] < person_to_meet[i]){
-                    swap(person_to_meet[i], person_to_meet[j]);
-                    swap(day[i], day[j]); swap(month[i], month[j]);
-                    swap(year[i],year[j]); swap(hour[i], hour[j]);
-                    swap(minute[i], minute[j]); swap(description[i], description[j]);
-                    swap(address[i], address[j]); swap(email[i], email[j]);
-                    swap(status[i], status[j]); swap(priority[i], priority[j]);
-                    swap(category[i], category[j]); swap(duration[i], duration[j]);
-                    swap(statistic[i], statistic[j]);
+                if(events[j].person_to_meet < events[i].person_to_meet){
+                    swap(events[i], events[j]);
                 }
             }
         }
@@ -120,16 +146,16 @@ void quanly::search(){
         while (left <= right)
         {
             int mid = (left + right)/2;
-            if(person_to_meet[mid] == key){
+            if(events[mid].person_to_meet == key){
                 cout<<"\n===SEARCH====\n";
                 cout<<"STT: "<<mid<<endl;
-                cout<<"Description: "<<description[mid]<< endl;
-                cout<<"Address: "<<address[mid]<<endl;
-                cout<<"Email: "<<email[mid]<<endl;
+                cout<<"Description: "<< events[mid].description << endl;
+                cout<<"Address: "<< events[mid].address<<endl;
+                cout<<"Email: "<< events[mid].email<<endl;
                 found = true;
                 break;
             }
-            if(person_to_meet[mid] < key){
+            if(events[mid].person_to_meet < key){
                 left = mid + 1;
             }
             else{
@@ -146,15 +172,8 @@ void quanly::search(){
     else if(chonsearch == 2){
         for(int i =0; i <stt -1; i++){
             for(int j = i+ 1; j <stt; j++){
-                if(email[j] < email[i]){
-                    swap(person_to_meet[i], person_to_meet[j]);
-                    swap(day[i], day[j]); swap(month[i], month[j]);
-                    swap(year[i],year[j]); swap(hour[i], hour[j]);
-                    swap(minute[i], minute[j]); swap(description[i], description[j]);
-                    swap(address[i], address[j]); swap(email[i], email[j]);
-                    swap(status[i], status[j]); swap(priority[i], priority[j]);
-                    swap(category[i], category[j]); swap(duration[i], duration[j]);
-                    swap(statistic[i], statistic[j]);
+                if(events[j].email < events[i].email){
+                    swap(events[i], events[j]);
                 }
             }
         }
@@ -167,16 +186,16 @@ void quanly::search(){
         while (left <= right)
         {
             int mid = (left + right)/2;
-            if(email[mid] == key){
+            if(events[mid].email == key){
                 cout<<"\n===SEARCH====\n";
                 cout<<"STT: "<<mid<<endl;
-                cout<<"Description: "<<description[mid]<< endl;
-                cout<<"Address: "<<address[mid]<<endl;
-                cout<<"Email: "<<email[mid]<<endl;
+                cout<<"Description: "<<events[mid].description<< endl;
+                cout<<"Address: "<<events[mid].address<<endl;
+                cout<<"Email: "<<events[mid].email<<endl;
                 found = true;
                 break;
             }
-            if(email[mid] < key){
+            if(events[mid].email < key){
                 left = mid + 1;
             }
             else{
@@ -194,15 +213,8 @@ void quanly::search(){
     else if(chonsearch == 3){
         for(int i = 0; i < stt -1; i++){
             for(int j = i + 1; j < stt; j++){
-                if(address[j]< address[i]){
-                    swap(person_to_meet[i], person_to_meet[j]);
-                    swap(day[i], day[j]); swap(month[i], month[j]);
-                    swap(year[i],year[j]); swap(hour[i], hour[j]);
-                    swap(minute[i], minute[j]); swap(description[i], description[j]);
-                    swap(address[i], address[j]); swap(email[i], email[j]);
-                    swap(status[i], status[j]); swap(priority[i], priority[j]);
-                    swap(category[i], category[j]); swap(duration[i], duration[j]);
-                    swap(statistic[i], statistic[j]);
+                if(events[j].address< events[i].address){
+                    swap(events[i], events[j]);
                 }
             }
         }
@@ -215,16 +227,16 @@ void quanly::search(){
         while (left <= right)
         {
             int mid = (left + right)/2;
-            if(address[mid] == key){
+            if(events[mid].address == key){
                 cout<<"\n===SEARCH====\n";
                 cout<<"STT: "<<mid<<endl;
-                cout<<"Description: "<<description[mid]<< endl;
-                cout<<"Address: "<<address[mid]<<endl;
-                cout<<"Email: "<<email[mid]<<endl;
+                cout<<"Description: "<<events[mid].description<< endl;
+                cout<<"Address: "<<events[mid].address<<endl;
+                cout<<"Email: "<<events[mid].email<<endl;
                 found = true;
                 break;
             }
-            if(address[mid] < key){
+            if(events[mid].address < key){
                 left = mid + 1;
             }
             else{
@@ -246,28 +258,28 @@ void quanly::sortPriority(){
     for(int i = 0; i< stt- 1; i++){
         int minIndex = i;
         for(int j = i + 1; j <stt; j++){
-            if(priorityValue(priority[j]) < priorityValue(priority[minIndex])){
+            if(priorityValue(events[j].priority) < priorityValue(events[minIndex].priority)){
                 minIndex = j;
             }
         }
         if(minIndex != i){
             int temp;
-            temp = year[i]; year[i] = year[minIndex]; year[minIndex] = temp;
-            temp = month[i]; month[i] = month[minIndex]; month[minIndex] = temp;
-            temp = day[i]; day[i] = day[minIndex]; day[minIndex] = temp;
-            temp = hour[i]; hour[i] = hour[minIndex]; hour[minIndex] = temp;
-            temp = minute[i]; minute[i] = minute[minIndex]; minute[minIndex] = temp;
-            temp = duration[i]; duration[i] = duration[minIndex]; duration[minIndex] = temp;
+            temp = events[i].year; events[i].year = events[minIndex].year; events[minIndex].year = temp;
+            temp = events[i].month; events[i].month = events[minIndex].month; events[minIndex].month = temp;
+            temp = events[i].day; events[i].day = events[minIndex].day; events[minIndex].day = temp;
+            temp = events[i].hour; events[i].hour = events[minIndex].hour; events[minIndex].hour = temp;
+            temp = events[i].minute; events[i].minute = events[minIndex].minute; events[minIndex].minute = temp;
+            temp = events[i].duration; events[i].duration = events[minIndex].duration; events[minIndex].duration = temp;
             
-            temp = statistic[i]; statistic[i] = statistic[minIndex]; statistic[minIndex] = temp;
+            temp = events[i].statistic; events[i].statistic = events[minIndex].statistic; events[minIndex].statistic = temp;
             string tempStr;
-            tempStr = description[i]; description[i]= description[minIndex]; description[minIndex] = tempStr;
-            tempStr = address[i]; address[i] = address[minIndex]; address[minIndex] = tempStr;
-            tempStr = person_to_meet[i]; person_to_meet[i] = person_to_meet[minIndex]; person_to_meet[minIndex] = tempStr;
-            tempStr = email[i]; email[i] = email[minIndex]; email[minIndex] = tempStr;
-            tempStr = priority[i]; priority[i]= priority[minIndex]; priority[minIndex] = tempStr;
-            tempStr = category[i]; category[i] = category[minIndex]; category[minIndex] = tempStr;
-            tempStr = status[i]; status[i] = status[minIndex]; status[minIndex] = tempStr;
+            tempStr = events[i].description; events[i].description= events[minIndex].description; events[minIndex].description = tempStr;
+            tempStr = events[i].address; events[i].address = events[minIndex].address; events[minIndex].address = tempStr;
+            tempStr = events[i].person_to_meet; events[i].person_to_meet = events[minIndex].person_to_meet; events[minIndex].person_to_meet = tempStr;
+            tempStr = events[i].email; events[i].email = events[minIndex].email; events[minIndex].email = tempStr;
+            tempStr = events[i].priority; events[i].priority= events[minIndex].priority; events[minIndex].priority = tempStr;
+            tempStr = events[i].category; events[i].category = events[minIndex].category; events[minIndex].category = tempStr;
+            tempStr = events[i].status; events[i].status = events[minIndex].status; events[minIndex].status = tempStr;
         }
         cout<<"Swap"<<i<<"<->"<<minIndex<<endl;
     }
@@ -284,9 +296,9 @@ int quanly::priorityValue(string p){
         for(int i = 0; i<stt; i++){
             cout<<"===============\n";
             cout<<"STT: "<<i<<endl;
-            cout<<"Date: "<< day[i]<<"/"<<month[i]<<"/"<<year[i]<<endl;
-            cout<<"Time: "<<hour[i]<<" : "<<minute[i]<<endl;
-            cout<<"Priority: "<<priority[i]<<endl;
+            cout<<"Date: "<< events[i].day<<"/"<<events[i].month<<"/"<<events[i].year<<endl;
+            cout<<"Time: "<<events[i].hour<<" : "<< events[i].minute<<endl;
+            cout<<"Priority: "<<events[i].priority<<endl;
             found = true; 
         }
     }
@@ -304,9 +316,9 @@ void quanly::display(){
 
     for(int i = 0; i < stt; i++){
 
-        int m = month[i];
-        int y = year[i];
-        int d = day[i];
+        int m = events[i].month;
+        int y = events[i].year;
+        int d = events[i].day;
 
         int a = (14 - m) / 12;
         int yy = y - a;
@@ -319,32 +331,32 @@ void quanly::display(){
         cout<<"\n---------------------------------\n";
         cout<<"STT        : "<<i<<endl;
         cout<<"Date       : "
-            <<day[i]<<"/"
-            <<month[i]<<"/"
-            <<year[i]
+            <<events[i].day<<"/"
+            <<events[i].month<<"/"
+            <<events[i].year
             <<" ("<<places[dayOfWeek]<<")\n";
 
         cout<<"Time       : "
-            <<hour[i]<<":"
-            <<minute[i]<<endl;
+            <<events[i].hour<<":"
+            <<events[i].minute<<endl;
 
         cout<<"Description: "
-            <<description[i]<<endl;
+            <<events[i].description<<endl;
 
         cout<<"Address    : "
-            <<address[i]<<endl;
+            <<events[i].address<<endl;
 
         cout<<"Meet       : "
-            <<person_to_meet[i]<<endl;
+            <<events[i].person_to_meet<<endl;
 
         cout<<"Email      : "
-            <<email[i]<<endl;
+            <<events[i].email<<endl;
 
         cout<<"Priority   : "
-            <<priority[i]<<endl;
+            <<events[i].priority<<endl;
 
         cout<<"Category   : "
-            <<category[i]<<endl;
+            <<events[i].category<<endl;
 
         cout<<"Status     : "
             <<status[i]<<endl;
@@ -356,7 +368,7 @@ void quanly::display(){
 bool quanly::checkConflict(){
     int newStart = startMinute(stt), newEnd = endMinute(stt);
     for(int i =0; i<stt; i++){
-        if(day[i] == day[stt] && month[i] == month[stt] && year[i] == year[stt]){
+        if(events[i].day == events[stt].day && events[i].month == events[stt].month && events[i].year == events[stt].year){
             int oldStart = startMinute(i), oldEnd = endMinute(i);
             if(newStart < oldEnd && newEnd > oldStart){
                 cout<<"\n=============\n";
@@ -368,10 +380,10 @@ bool quanly::checkConflict(){
     return false;
 }
 int quanly::startMinute(int i){
-    return hour[i] * 60 + minute[i];
+    return events[i].hour * 60 + events[i].minute;
 }
 int quanly::endMinute(int i){
-    return startMinute(i) + duration[i];
+    return startMinute(i) + events[i].duration;
 }
 // Export thong tin va kiem tra front va rear theo thong tin cua queue 
 void quanly::exportQueueCSV(){
@@ -391,14 +403,14 @@ void quanly::exportQueueCSV(){
     for(int i = front; i <= rear; i++){
         int index = q[i];
         string state = (status[index]=="Done") ? "Done":"Pending";
-        string date = to_string(day[index]) + "/" + to_string(month[index]) + "/" + to_string(year[index]);
+        string date = to_string(events[index].day) + "/" + to_string(events[index].month) + "/" + to_string(events[index].year);
         string timeStr;
-        if(hour[index] < 10) timeStr += "0";
-        timeStr += to_string(hour[index]);
+        if(events[index].hour < 10) timeStr += "0";
+        timeStr += to_string(events[index].hour);
         timeStr += " : ";
-        if(minute[index] < 10) timeStr += "0";
-        timeStr += to_string(minute[index]);
-        file<< order<<"   "<< "\""<< date<< "\""<< "   "<<"\""<<timeStr<<"\""<<"   "<<"\""<<description[index]<<"\""<<"   "<<"\""<<priority[index]<<"\""<<"   "<< "\""<<state<<"\""<<endl;
+        if(events[index].minute < 10) timeStr += "0";
+        timeStr += to_string(events[index].minute);
+        file<< order<<"   "<< "\""<< date<< "\""<< "   "<<"\""<<timeStr<<"\""<<"   "<<"\""<<events[index].description<<"\""<<"   "<<"\""<<events[index].priority<<"\""<<"   "<< "\""<<state<<"\""<<endl;
         order++;
     }
     file.close();
@@ -425,46 +437,57 @@ void quanly::edit(){
     cout<<endl;
     cout<<"Nhap index need delete: ";
     cin>>index;
-    if(index < 0 || index >= stt) cout<<"Sai stt!\n"; return;
+    if(index < 0 || index >= stt){ 
+        cout<<"Sai stt!\n"; return;
+    }
     switch (luachon)
     {
     case 1:
         cout<<"Sua ngay: ";
-        cin>>day[index];
-        if(day[index] < 0|| day[index] >= 33) cout<<"Moi nhap lai ngay!"; return;
+        cin>>events[index].day;
+        if(events[index].day < 0|| events[index].day >= 33){ 
+            cout<<"Moi nhap lai ngay!"; return;
+        }
         break;
     case 2:
         cout<<"Sua thang: ";
-        cin>>month[index];
-        if(month[index] < 0||month[index] >= 13) cout<<"Moi nhap lai thang!"; return;
+        cin>>events[index].month;
+        if(events[index].month < 0|| events[index].month >= 13) 
+        {
+            cout<<"Moi nhap lai thang!"; 
+            return;
+        }
+
         break;
     case 3:
         cout<<"Sua nam: ";
-        cin>>year[index];
-        if(year[index] <0000) cout<<"Moi nhap lai nam!"; return;
+        cin>>events[index].year;
+        if(events[index].year <0000) {
+            cout<<"Moi nhap lai nam!"; return;
+        }
         break;
     case 4:
         cout<<"Sua gio: ";
-        cin>>hour[index];
-        if(hour[index] < 0 || hour[index] >= 24) cout<<"Moi nhap lai gio!"; return;
+        cin>>events[index].hour;
+        if(events[index].hour < 0 || events[index].hour >= 24) {cout<<"Moi nhap lai gio!"; return;}
         break;
     case 5:
-        cout<<"Sua description: "; getline(cin, description[index]);
+        cout<<"Sua description: "; getline(cin, events[index].description);
         break;
     case 6:
         cout<<"Sua phut: ";
-        cin>>minute[index];
-        if(minute[stt] < 0 || minute[stt] >= 60) cout<<"Moi nhap lai phut!"; return;
+        cin>>events[index].minute;
+        if(events[stt].minute < 0 || events[stt].minute >= 60) {cout<<"Moi nhap lai phut!"; return;}
         break;
     case 7:
         cout<<"Sua address: ";
-        cin>>address[index];
+        cin>>events[index].address;
         break;
     case 8: 
-        cout<<"Sua person to meet: "; getline(cin, person_to_meet[index]); 
+        cout<<"Sua person to meet: "; getline(cin, events[index].person_to_meet); 
         break;
     case 9:
-        cout<<"Sua email: "; getline(cin, email[index]);
+        cout<<"Sua email: "; getline(cin, events[index].email);
         break;
     case 10:
         cout<<"Sua status: "; cin>>status[index];
@@ -510,22 +533,7 @@ void quanly::delet(){
 
     for(int i = index; i < stt - 1; i++){
 
-        day[i] = day[i + 1];
-        month[i] = month[i + 1];
-        year[i] = year[i + 1];
-        hour[i] = hour[i + 1];
-        minute[i] = minute[i + 1];
-
-        description[i] = description[i + 1];
-        address[i] = address[i + 1];
-        person_to_meet[i] = person_to_meet[i + 1];
-        email[i] = email[i + 1];
-
-        priority[i] = priority[i + 1];
-        category[i] = category[i + 1];
-        duration[i] = duration[i + 1];
-        statistic[i] = statistic[i + 1];
-        status[i] = status[i + 1];
+        events[i] = events[i + 1];
     }
 
     stt--;
@@ -540,43 +548,43 @@ void quanly::add(){
     }
     char c1, c2, c3;
     cout<< "Nhap them su kien theo dinh dang (hh:mm dd/mm/yyyy): "<< endl;
-    cin >> hour[stt]>>c1>>minute[stt]>>day[stt]>>c2>>month[stt]>>c3>>year[stt];
-    if(day[stt] < 0 || day[stt] > 31){
+    cin >> events[stt].hour>>c1>>events[stt].minute>>events[stt].day>>c2>>events[stt].month>>c3>>events[stt].year;
+    if(events[stt].day < 0 || events[stt].day > 31){
         cout<<"Moi nhap lai!"<< endl; 
         clear(stt);
         return;
         
     }
-    if(month[stt] < 0 || month[stt] >= 13){
+    if(events[stt].month < 0 || events[stt].month >= 13){
         cout<<"Moi nhap lai!"<<endl;
         clear(stt);
         return; 
     }
-    if(hour[stt]< 0 || hour[stt] >23){
+    if(events[stt].hour < 0 || events[stt].hour >23){
         cout<<"Moi nhap lai!"<<endl;
         clear(stt);
         return; 
     }
-    if(minute[stt]< 0|| minute[stt]>59){
+    if(events[stt].minute < 0|| events[stt].minute >59){
         cout<<"Moi nhap lai!"<<endl;
         clear(stt);
         return; 
     }
     cout<<"===================\n";
     cout<<"Duration: ";
-    cin>>duration[stt];
+    cin>>events[stt].duration;
     cin.ignore();
     cout<<"===================\n";
     cout<<"Nhap description: ";
-    getline(cin, description[stt]);
+    getline(cin, events[stt].description);
 
     cout<<"====================\n";
     cout<<"Nhap address:";
-    getline(cin, address[stt]);
+    getline(cin, events[stt].address);
 
     cout<<"====================\n";
     cout<<"Nhap person_to_meet: ";
-    getline(cin, person_to_meet[stt]);
+    getline(cin, events[stt].person_to_meet);
 
     int chonn;
     cout<<"\n======STATUS======\n";
@@ -589,13 +597,13 @@ void quanly::add(){
         switch (chonn)
         {
         case 0:
-            status[stt] = "Pending";
+            events[stt].status = "Pending";
             break;
         case 1:
-            status[stt] = "Done";
+            events[stt].status  = "Done";
             break;
         default:
-            status[stt] = "Canceled";
+            events[stt].status  = "Canceled";
             break;
         }
     }
@@ -607,7 +615,7 @@ void quanly::add(){
 
     cout<<"============\n";
     cout<<"======DOANH THU=======\n";
-    cout<<"Nhap doanh thu(USD): "; cin>>statistic[stt];
+    cout<<"Nhap doanh thu(USD): "; cin>>events[stt].statistic;
 
     int chonpriority;
     cout<<"===================\n";
@@ -620,16 +628,16 @@ void quanly::add(){
     switch (chonpriority)
     {
     case 1:
-        priority[stt] = "HIGH";
+        events[stt].priority = "HIGH";
         break;
     case 2:
-        priority[stt] = "MEDIUM";
+        events[stt].priority = "MEDIUM";
         break;
     case 3:
-        priority[stt] = "LOW";
+        events[stt].priority = "LOW";
         break;
     default:
-        priority[stt] = "LOW";
+        events[stt].priority = "LOW";
         break;
     }
 
@@ -646,35 +654,36 @@ void quanly::add(){
     switch (choncategory)
     {
     case 1:
-        category[stt] = "WORK";
+        events[stt].category = "WORK";
         break;
     case 2:
-        category[stt] = "STUDY";
+        events[stt].category= "STUDY";
         break;
     case 3:
-        category[stt] = "PERSON TO MEET";
+        events[stt].category = "PERSON TO MEET";
         break;
     case 4:
-        category[stt] = "MEETING";
+        events[stt].category= "MEETING";
         break;
     case 5:
-        category[stt] = "HEALTH";
+        events[stt].category = "HEALTH";
         break;
     default:
-        category[stt] = "PERSON TO MEET";
+        events[stt].category = "PERSON TO MEET";
         break;
     }
-    int m = month[stt], n = year[stt], d = day[stt], a = (14 - m)/12, y = (n - a), mon = m + 12*a -2, dayofweek = (d + y + y/4 - y/100 + y/400 + (31 * mon)/12)%7;
+    int m = events[stt].month, n = events[stt].year, d = events[stt].day, a = (14 - m)/12, y = (n - a), mon = m + 12*a -2, 
+    dayofweek = (d + y + y/4 - y/100 + y/400 + (31 * mon)/12)%7;
     places[dayofweek];
     cout<<"Thu: "<< places[dayofweek]<<endl;
 
 
     tm cd = {};
-    cd.tm_mday = day[stt];
-    cd.tm_mon = month[stt] - 1;
-    cd.tm_year = year[stt] - 1900;
-    cd.tm_hour = hour[stt];
-    cd.tm_min = minute[stt];
+    cd.tm_mday = events[stt].day;
+    cd.tm_mon = events[stt].month - 1;
+    cd.tm_year = events[stt].year - 1900;
+    cd.tm_hour = events[stt].hour;
+    cd.tm_min = events[stt].minute;
 
     time_t timet = mktime(&cd);
     time_t now = time(0);
@@ -690,6 +699,7 @@ void quanly::add(){
     diff = abs(diff - (h *(60 * 60)));
 
     int p = abs(diff/60);
+    log("ADD EVENT");
     cout<<"Thoi gian con lai: "<<" Ngay: "<<k<<" gio: "<<h<<" phut: "<<p<<endl;
 }
 int main(){
@@ -705,6 +715,8 @@ int main(){
         cout<<"6. Sort priority\n";
         cout<<"7. Search\n";
         cout<<"8. Export CSV\n";
+        cout<<"9. Meeting Evenet\n";
+        cout<<"10. Study Evenet\n";
         cout<<"0. Exit\n";
         cout<<"Nhap lua chon: ";
         cin>>choice;
@@ -741,7 +753,12 @@ int main(){
         case 8:
             p.exportQueueCSV();
             break;
-
+        case 9:
+            MeetingEvent();
+            break;
+        case 10:
+            StudyEvent();
+            break;
         case 0:
             cout<<"Tam biet!\n";
             p.log("REPORT");
