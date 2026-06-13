@@ -28,6 +28,24 @@ class Event
     //     string priority;
     //     string category;
     //     string status;
+    //void setday(int d){
+    //   day = d;
+    //}
+    //void setmonth(int m){month = m;}
+    //void setyear(int y){ year  = y;}
+    //void sethour(int h){hour = h;}
+    //void setminute(int m){minute = m;}
+    //void setStatic(int sta){statistic = sta;}
+    //void setduration(int dura){duration = dura;}
+    //void setdes(string desc){description = desc;}
+    //void setadd(string add){address = add;}
+    //void setperson(string person){person_to_meet = person;}
+    //void setema(string ema){email = ema;}
+    //void setpri(string pri){priority = pri;}
+    //void setcategory(string cate){category = cate;}
+    //void setstatus(string statu){status = status;}
+    
+
 
 public:
     int day;
@@ -67,6 +85,7 @@ public:
     virtual void display()
     {
         cout << description << endl;
+        //cout <<getdes()<<endl;
     }
     virtual ~Event() {}
 };
@@ -78,6 +97,7 @@ public:
     void display() override
     {
         cout << "[MEETING] " << description << endl;
+        //cout<<"[MEETING]"<<getdes<<endl;
     }
 };
 // da hinh
@@ -88,6 +108,7 @@ public:
     void display() override
     {
         cout << "[STUDY] " << description << endl;
+        //cout<<"[STUDY]"<<getdes()<<endl;
     }
 };
 class quanly
@@ -205,6 +226,7 @@ void quanly::search()
                 }
             }
         }
+        //complexity  o(n^2)
         for (int i = 0; i < stt; i++)
         {
             cout << "";
@@ -256,6 +278,7 @@ void quanly::search()
                 }
             }
         }
+        //complixity o(n^2)
         int left = 0, right = stt - 1;
         string key;
         bool found = false;
