@@ -5,8 +5,29 @@
 #include <cmath>
 #include <fstream>
 #include <iomanip>
+#include <vector>
+#include <algorithm>
 using namespace std;
 class Event{
+    // private:
+    //     int day;
+    //     int month;
+    //     int year;
+
+    //     int hour;
+    //     int minute;
+    //     int statistic;
+    //     int duration;
+
+    //     string description;
+    //     string address;
+    //     string person_to_meet;
+    //     string email;
+
+    //     string priority;
+    //     string category;
+    //     string status;
+
     public: 
         int day;
         int month;
@@ -31,6 +52,7 @@ class Event{
         }
         virtual ~Event(){}
 };
+//da hinh cua display()
 class MeetingEvent : public Event {
     public: 
         string meettingRoom;
@@ -38,6 +60,7 @@ class MeetingEvent : public Event {
             cout<<"[MEETING] "<<description<<endl;
         }
 };
+//da hinh
 class StudyEvent : public Event{
     public:
         string subject;
@@ -47,7 +70,8 @@ class StudyEvent : public Event{
 };
 class quanly{
     private:
-        Event events[200];
+        Event events[200];//static
+        //vector<Event> events;
         const string places[7]= {"Sunday", "Monday", "Tuesday",
              "Wednesday", "Thursday", "Friday", "Saturday"};
         string status[200];
@@ -55,6 +79,10 @@ class quanly{
         int front = 0;
         int rear = -1;
         int stt = 0;
+        //queue<int> eventQueue;
+        //eventQueue.push(index);
+        //eventQueue.pop();
+        //eventQueue.front();
     public:
         void add();
         void delet();
@@ -76,7 +104,7 @@ class quanly{
             cout<<"\nCam on da su dung chuong trinh!\n";
         }
 };
-//clear lai code
+//clear lai code lam cac bien thanh 0 va rong
 void quanly::clear(int i){
     events[i].day = 0;
     events[i].month = 0;
@@ -88,7 +116,7 @@ void quanly::clear(int i){
     events[i].person_to_meet = ""; events[i].email = ""; events[i].priority = ""; events[i].category = "";
     events[i].status = false;
 }
-//Gan vao mang
+//Gan vao mang khi thanh cong va khong mac loi sai ky tu va nhap sai form
 void quanly::commitAdd(){
     q[++rear] = stt;
     stt++;
@@ -97,6 +125,7 @@ void quanly::commitAdd(){
 }
 //sap xep thu tu selection sort
 void quanly::sort(){
+    //STL
     cout<<"=====================\n";
     cout<<"=======SORT=========\n";
     int minIndex = 0;
@@ -114,6 +143,8 @@ void quanly::sort(){
             swap(events[i], events[minIndex]);
         }
     }
+    //complexity o(n^2)
+    
     log("SORT EVENT");
     cout<<"SORT SUCCESSFULLY!"<<endl;
 }
@@ -211,6 +242,7 @@ void quanly::search(){
         return;
     }
     else if(chonsearch == 3){
+        //sort truoc de sap xep
         for(int i = 0; i < stt -1; i++){
             for(int j = i + 1; j < stt; j++){
                 if(events[j].address< events[i].address){
@@ -224,6 +256,7 @@ void quanly::search(){
         cout<<"Nhap address can tim: "; 
         cin.ignore();
         getline(cin, key);
+        
         while (left <= right)
         {
             int mid = (left + right)/2;
@@ -263,6 +296,7 @@ void quanly::sortPriority(){
             }
         }
         if(minIndex != i){
+            //co them chuyen thanh function de swap
             int temp;
             temp = events[i].year; events[i].year = events[minIndex].year; events[minIndex].year = temp;
             temp = events[i].month; events[i].month = events[minIndex].month; events[minIndex].month = temp;
@@ -307,13 +341,14 @@ int quanly::priorityValue(string p){
 }
 //IN ra cac thong tin trong su kien khi in ra
 void quanly::display(){
+    //stt == 0 khong co su kien
     if(stt == 0){
         cout<<"Khong co su kien nao!\n";
         return;
     }
 
     cout<<"\n========== EVENT LIST ==========\n";
-
+    //in ra thu ngay thang
     for(int i = 0; i < stt; i++){
 
         int m = events[i].month;
@@ -323,7 +358,7 @@ void quanly::display(){
         int a = (14 - m) / 12;
         int yy = y - a;
         int mon = m + 12 * a - 2;
-
+        //tim thu
         int dayOfWeek =
             (d + yy + yy/4 - yy/100 + yy/400 +
             (31 * mon)/12) % 7;
@@ -379,9 +414,11 @@ bool quanly::checkConflict(){
     }
     return false;
 }
+//thooi gian bat dau cua sk chuyen gio thanh p
 int quanly::startMinute(int i){
     return events[i].hour * 60 + events[i].minute;
 }
+//them timestart va cong duration
 int quanly::endMinute(int i){
     return startMinute(i) + events[i].duration;
 }
@@ -537,11 +574,14 @@ void quanly::delet(){
     }
 
     stt--;
+    //events.erse(events.begin() +index);
+    
 
     cout<<"Xoa thanh cong!\n";
 }
 //Them su kien voi cac phuong thuc theo dinh dang cu the va se in ra successfully khi thanh cong va neu nhap sai se in lai thong tin
 void quanly::add(){
+    
     if(stt >= 200){
         cout<<"Danh sach da day!\n";
         return;
@@ -699,6 +739,9 @@ void quanly::add(){
     diff = abs(diff - (h *(60 * 60)));
 
     int p = abs(diff/60);
+    //Event e;
+    //events.push_back(e); khong can stt++;
+    //events.size(); so luong phan tu
     log("ADD EVENT");
     cout<<"Thoi gian con lai: "<<" Ngay: "<<k<<" gio: "<<h<<" phut: "<<p<<endl;
 }
