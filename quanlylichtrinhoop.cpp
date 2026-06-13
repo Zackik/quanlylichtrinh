@@ -59,6 +59,8 @@ class MeetingEvent : public Event {
         void display() override{
             cout<<"[MEETING] "<<description<<endl;
         }
+    
+
 };
 //da hinh
 class StudyEvent : public Event{
@@ -798,9 +800,15 @@ int main(){
             break;
         case 9:
             MeetingEvent();
+            Event*e;
+            e = new MeetingEvent();
+            e->display();
             break;
         case 10:
             StudyEvent();
+            Event* e;
+            e = new StudyEvent();
+            e->display();
             break;
         case 0:
             cout<<"Tam biet!\n";
